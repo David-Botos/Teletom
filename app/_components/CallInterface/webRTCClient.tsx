@@ -51,9 +51,9 @@ export default function WebRTCClient() {
     <RTVIClientProvider client={voiceClientRef.current!}>
       <AppProvider>
         <TooltipProvider>
-          <main>
+          <main className="h-full">
             <Header />
-            <div id="app">
+            <div id="CallUI" className="h-full flex justify-center">
               <CallUI />
             </div>
           </main>

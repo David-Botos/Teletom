@@ -13,11 +13,11 @@ export default function Home() {
         </div>
       </div>
       {/* calendar / call interface */}
-      <div className="h-full flex">
+      <div className="h-full flex gap-5 mx-10">
         <div className="overflow-hidden h-4/5 w-3/5 mt-10">
           <CalendarComponent />
         </div>
-        <div>
+        <div className="w-2/5 h-full">
           <WebRTCClient />
         </div>
       </div>

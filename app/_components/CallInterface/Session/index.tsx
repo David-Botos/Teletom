@@ -35,6 +35,7 @@ export const Session = React.memo(
     const [showConfig, setShowConfig] = useState<boolean>(false);
     const [showStats, setShowStats] = useState<boolean>(false);
     const [muted, setMuted] = useState(startAudioOff);
+    // TODO: Check out the purpose of this
     const [runtimeConfigUpdate, setRuntimeConfigUpdate] = useState<
       RTVIClientConfigOption[] | null
     >(null);
