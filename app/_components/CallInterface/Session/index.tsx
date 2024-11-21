@@ -126,7 +126,7 @@ export const Session = React.memo(
     }
 
     return (
-      <>
+      <div className="flex h-full flex-col justify-between">
         <dialog ref={modalRef}>
           <Card.Card className="w-svw max-w-full md:max-w-md lg:max-w-lg">
             <Card.CardHeader>
@@ -173,7 +173,7 @@ export const Session = React.memo(
             document.getElementById("tray")!
           )}
 
-        <div className="flex-1 flex flex-col items-center justify-center w-full">
+        <div className="flex flex-col items-center justify-center w-full gap-10">
           <Card.Card
             fullWidthMobile={false}
             className="w-full max-w-[320px] sm:max-w-[420px] mt-auto shadow-long"
@@ -190,8 +190,8 @@ export const Session = React.memo(
           />
         </div>
 
-        <footer className="w-full flex flex-row mt-auto self-end md:w-auto">
-          <div className="flex flex-row justify-between gap-3 w-full md:w-auto">
+        <footer className="w-full flex flex-row self-center md:w-auto">
+          <div className="flex flex-row justify-between gap-3 w-full">
             <Tooltip>
               <TooltipContent>Interrupt bot</TooltipContent>
               <TooltipTrigger asChild>
@@ -243,7 +243,7 @@ export const Session = React.memo(
         </footer>
         {/*audio ref={bingSoundRef} src="/bing.wav" />
         <audio ref={bongSoundRef} src="/bong.wav" /> */}
-      </>
+      </div>
     );
   },
   (p, n) => p.state === n.state

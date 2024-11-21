@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useState } from "react";
 import { Calendar, dateFnsLocalizer, Event } from "react-big-calendar";
 import withDragAndDrop, {
@@ -48,7 +48,7 @@ export const CalendarComponent = () => {
       onEventDrop={onEventDrop}
       onEventResize={onEventResize}
       resizable
-      style={{ height: "100%" }}
+      style={{ height: "100%", width: "100%" }}
     />
   );
 };
