@@ -15,7 +15,7 @@ export default function Home() {
       {/* calendar / call interface */}
       <div className="flex h-full gap-5 m-10">
         <div className="h-full w-3/5 flex items-center">
-          <div className="flex overflow-hidden w-full h-5/6">
+          <div className="flex overflow-hidden w-full h-full">
             <CalendarComponent />
           </div>
         </div>
