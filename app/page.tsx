@@ -1,8 +1,8 @@
-'use client'
-import { useRef } from "react";
-import WebRTCClient from "./_components/CallInterface/webRTCClient";
-import { CalendarComponent } from "./_components/dndCalendar";
-import { useAvailableHeight } from "./_hooks/useAvailableHeight";
+'use client';
+import { useRef } from 'react';
+import WebRTCClient from './_components/CallInterface/webRTCClient';
+import { CalendarComponent } from './_components/dndCalendar';
+import { useAvailableHeight } from './_hooks/useAvailableHeight';
 
 export default function Home() {
   const navRef = useRef<HTMLDivElement>(null);

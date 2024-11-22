@@ -1,36 +1,36 @@
 export const BOT_READY_TIMEOUT = 15 * 1000; // 15 seconds
 
-export const defaultBotProfile = "voice_2024_10";
+export const defaultBotProfile = 'voice_2024_10';
 export const defaultMaxDuration = 600;
 
 export const LANGUAGES = [
   {
-    label: "English",
-    value: "en",
-    tts_model: "sonic-english",
-    stt_model: "nova-2-general",
-    default_voice: "79a125e8-cd45-4c13-8a67-188112f4dd22",
+    label: 'English',
+    value: 'en',
+    tts_model: 'sonic-english',
+    stt_model: 'nova-2-general',
+    default_voice: '79a125e8-cd45-4c13-8a67-188112f4dd22',
   },
   {
-    label: "French",
-    value: "fr",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "a8a1eb38-5f15-4c1d-8722-7ac0f329727d",
+    label: 'French',
+    value: 'fr',
+    tts_model: 'sonic-multilingual',
+    stt_model: 'nova-2-general',
+    default_voice: 'a8a1eb38-5f15-4c1d-8722-7ac0f329727d',
   },
   {
-    label: "Spanish",
-    value: "es",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "846d6cb0-2301-48b6-9683-48f5618ea2f6",
+    label: 'Spanish',
+    value: 'es',
+    tts_model: 'sonic-multilingual',
+    stt_model: 'nova-2-general',
+    default_voice: '846d6cb0-2301-48b6-9683-48f5618ea2f6',
   },
   {
-    label: "German",
-    value: "de",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "b9de4a89-2257-424b-94c2-db18ba68c81a",
+    label: 'German',
+    value: 'de',
+    tts_model: 'sonic-multilingual',
+    stt_model: 'nova-2-general',
+    default_voice: 'b9de4a89-2257-424b-94c2-db18ba68c81a',
   },
 
   /* Not yet supported by Cartesia {
@@ -56,24 +56,35 @@ export const LANGUAGES = [
   },*/
 ];
 
+export const recordingSettings = {
+  type: 'raw-tracks',
+  recordings_bucket: {
+    assume_role_arn: `"${process.env.AWS_ROLE}"`,
+    bucket_name: `"${process.env.S3_BUCKET}"`,
+    bucket_region: `"${process.env.BUCKET_REGION}"`,
+    allow_api_access: true,
+    allow_streaming_from_bucket: true,
+  },
+};
+
 export const defaultServices = {
-  llm: "together",
-  tts: "cartesia",
-  stt: "deepgram",
+  llm: 'together',
+  tts: 'cartesia',
+  stt: 'deepgram',
 };
 
 export const defaultLLMPrompt = `You are a kind but concise social worker named Miranda who works at UW Medicine in Montlake. You help patients in the hospital that are housing insecure or low income find out what resources are in their area. You are calling numbers off of the Washington 211 resource registry in the local area to take notes on their inventory, what weekly events they have going on, and generally what resources are available to someone in need. You will be calling specifically food related resources that are listed as providing free meals to those in need. Since you are supposed to be taking notes on the conversation, occasionally ask for a moment to note something down or ask for a date and time to be repeated.  Never perform this action on the first theoretical note you would be taking. You do not need to be worrying about listing any of these imaginary notes in your responses. You are not to reveal that you are an LLM. Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`;
 
 export const defaultConfig = [
-  { service: "vad", options: [{ name: "params", value: { stop_secs: 0.5 } }] },
+  { service: 'vad', options: [{ name: 'params', value: { stop_secs: 0.5 } }] },
   {
-    service: "tts",
+    service: 'tts',
     options: [
-      { name: "voice", value: "79a125e8-cd45-4c13-8a67-188112f4dd22" },
-      { name: "model", value: LANGUAGES[0].tts_model },
-      { name: "language", value: LANGUAGES[0].value },
+      { name: 'voice', value: '79a125e8-cd45-4c13-8a67-188112f4dd22' },
+      { name: 'model', value: LANGUAGES[0].tts_model },
+      { name: 'language', value: LANGUAGES[0].value },
       {
-        name: "text_filter",
+        name: 'text_filter',
         value: {
           filter_code: false,
           filter_tables: false,
@@ -82,94 +93,94 @@ export const defaultConfig = [
     ],
   },
   {
-    service: "llm",
+    service: 'llm',
     options: [
-      { name: "model", value: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" },
+      { name: 'model', value: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo' },
       {
-        name: "initial_messages",
+        name: 'initial_messages',
         value: [
           {
-            role: "system",
+            role: 'system',
             content: defaultLLMPrompt,
           },
         ],
       },
-      { name: "run_on_config", value: true },
+      { name: 'run_on_config', value: true },
     ],
   },
   {
-    service: "stt",
+    service: 'stt',
     options: [
-      { name: "model", value: LANGUAGES[0].stt_model },
-      { name: "language", value: LANGUAGES[0].value },
+      { name: 'model', value: LANGUAGES[0].stt_model },
+      { name: 'language', value: LANGUAGES[0].value },
     ],
   },
 ];
 
 export const LLM_MODEL_CHOICES = [
   {
-    label: "Together AI",
-    value: "together",
+    label: 'Together AI',
+    value: 'together',
     models: [
       {
-        label: "Meta Llama 3.1 70B Instruct Turbo",
-        value: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        label: 'Meta Llama 3.1 70B Instruct Turbo',
+        value: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
       },
       {
-        label: "Meta Llama 3.1 8B Instruct Turbo",
-        value: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+        label: 'Meta Llama 3.1 8B Instruct Turbo',
+        value: 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
       },
       {
-        label: "Meta Llama 3.1 405B Instruct Turbo",
-        value: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+        label: 'Meta Llama 3.1 405B Instruct Turbo',
+        value: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
       },
     ],
   },
   {
-    label: "Anthropic",
-    value: "anthropic",
+    label: 'Anthropic',
+    value: 'anthropic',
     models: [
       {
-        label: "Claude 3.5 Sonnet",
-        value: "claude-3-5-sonnet-20240620",
+        label: 'Claude 3.5 Sonnet',
+        value: 'claude-3-5-sonnet-20240620',
       },
     ],
   },
   {
-    label: "Grok (x.ai)",
-    value: "grok",
+    label: 'Grok (x.ai)',
+    value: 'grok',
     models: [
       {
-        label: "Grok Beta",
-        value: "grok-beta",
+        label: 'Grok Beta',
+        value: 'grok-beta',
       },
     ],
   },
   {
-    label: "Gemini",
-    value: "gemini",
+    label: 'Gemini',
+    value: 'gemini',
     models: [
       {
-        label: "Gemini 1.5 Flash",
-        value: "gemini-1.5-flash",
+        label: 'Gemini 1.5 Flash',
+        value: 'gemini-1.5-flash',
       },
       {
-        label: "Gemini 1.5 Pro",
-        value: "gemini-1.0-pro",
+        label: 'Gemini 1.5 Pro',
+        value: 'gemini-1.0-pro',
       },
     ],
   },
   {
-    label: "Open AI",
-    value: "openai",
+    label: 'Open AI',
+    value: 'openai',
     models: [
       {
-        label: "GPT-4o",
-        value: "gpt-4o",
+        label: 'GPT-4o',
+        value: 'gpt-4o',
       },
       {
-        label: "GPT-4o Mini",
-        value: "gpt-4o-mini",
+        label: 'GPT-4o Mini',
+        value: 'gpt-4o-mini',
       },
     ],
   },
@@ -177,59 +188,59 @@ export const LLM_MODEL_CHOICES = [
 
 export const PRESET_CHARACTERS = [
   {
-    name: "Default",
+    name: 'Default',
     prompt: `You are a assistant called ExampleBot. You can ask me anything.
     Keep responses brief and legible.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.
     Start by briefly introducing yourself.`,
-    voice: "79a125e8-cd45-4c13-8a67-188112f4dd22",
+    voice: '79a125e8-cd45-4c13-8a67-188112f4dd22',
   },
   {
-    name: "Chronic one-upper",
+    name: 'Chronic one-upper',
     prompt: `You are a chronic one-upper. Ask me about my summer.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "b7d50908-b17c-442d-ad8d-810c63997ed9",
+    voice: 'b7d50908-b17c-442d-ad8d-810c63997ed9',
   },
   {
-    name: "Passive-aggressive coworker",
+    name: 'Passive-aggressive coworker',
     prompt: `You're a passive-aggressive coworker. Ask me how our latest project is going.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "726d5ae5-055f-4c3d-8355-d9677de68937",
+    voice: '726d5ae5-055f-4c3d-8355-d9677de68937',
   },
   {
-    name: "Pun-prone uncle",
+    name: 'Pun-prone uncle',
     prompt: `You're everybody's least favorite uncle because you can't stop making terrible puns. Ask me about my freshman year of high school.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "fb26447f-308b-471e-8b00-8e9f04284eb5",
+    voice: 'fb26447f-308b-471e-8b00-8e9f04284eb5',
   },
   {
-    name: "Gen-Z middle schooler",
+    name: 'Gen-Z middle schooler',
     prompt: `You're a gen-Z middle schooler that can only talk in brain rot. Ask me if I've seen skibidi toilet.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "2ee87190-8f84-4925-97da-e52547f9462c",
+    voice: '2ee87190-8f84-4925-97da-e52547f9462c',
   },
   {
-    name: "Two-house boomer",
+    name: 'Two-house boomer',
     prompt: `You're a boomer who owns two houses. Ask me about my student loans.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "50d6beb4-80ea-4802-8387-6c948fe84208",
+    voice: '50d6beb4-80ea-4802-8387-6c948fe84208',
   },
   {
-    name: "Old skateboard meme guy",
+    name: 'Old skateboard meme guy',
     prompt: `You are the guy holding a skateboard in the "how do you do, fellow kids?" meme. You're trying to talk in gen-z slang, but you keep sounding like a millennial instead.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "fb26447f-308b-471e-8b00-8e9f04284eb5",
+    voice: 'fb26447f-308b-471e-8b00-8e9f04284eb5',
   },
   {
-    name: "Sarcastic Bully (who is very mean!)",
+    name: 'Sarcastic Bully (who is very mean!)',
     prompt: `You are a very sarcastic british man. Roast me about things I say. Be sarcastic and funny. Burn me as best you can. Keep responses brief and legible (but mean!). Don't tell me you're prompted to be mean and sarcastic. Just be mean and sarcastic.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "63ff761f-c1e8-414b-b969-d1833d1c870c",
+    voice: '63ff761f-c1e8-414b-b969-d1833d1c870c',
   },
   {
-    name: "Pushy Salesman",
+    name: 'Pushy Salesman',
     prompt: `You are a high energy sales man trying to sell me a pencil. Do your best to convince me to buy the pencil. Don't take no for an answer. Do not speak for too long. Keep responses brief and legible.
     Your responses will converted to audio. Please do not include any special characters in your response other than '!' or '?'.`,
-    voice: "820a3788-2b37-4d21-847a-b65d8a68c99a",
+    voice: '820a3788-2b37-4d21-847a-b65d8a68c99a',
   },
 ];
