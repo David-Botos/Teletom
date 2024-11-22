@@ -53,7 +53,7 @@ export default function WebRTCClient() {
         <TooltipProvider>
           <main className="flex flex-col h-full">
             <Header />
-            <div id="CallUI" className="h-full flex justify-center">
+            <div id="CallUI" className="h-full flex justify-center text-black">
               <CallUI />
             </div>
           </main>

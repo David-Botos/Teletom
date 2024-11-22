@@ -9,10 +9,10 @@ export default function Home() {
   const availableHeight = useAvailableHeight(navRef);
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex justify-between bg-slate-50 py-4 px-6" ref={navRef}>
+    <div className="flex flex-col h-screen bg-white">
+      <div className="flex justify-between bg-slate-400 py-4 px-6" ref={navRef}>
         <div>
-          <p>TAPN Demo</p>
+          <p className="text-white font-bold">TAPN Demo</p>
         </div>
         <div>{/* <p className="text-blue-600 font-bold">Start Call</p> */}</div>
       </div>
