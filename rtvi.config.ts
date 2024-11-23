@@ -1,7 +1,7 @@
 export const BOT_READY_TIMEOUT = 15 * 1000; // 15 seconds
 
 export const defaultBotProfile = 'voice_2024_10';
-export const defaultMaxDuration = 600;
+export const defaultMaxDuration = 60;
 
 export const LANGUAGES = [
   {
@@ -59,9 +59,9 @@ export const LANGUAGES = [
 export const recordingSettings = {
   type: 'raw-tracks',
   recordings_bucket: {
-    assume_role_arn: `"${process.env.AWS_ROLE}"`,
-    bucket_name: `"${process.env.S3_BUCKET}"`,
-    bucket_region: `"${process.env.BUCKET_REGION}"`,
+    assume_role_arn: process.env.AWS_ROLE,
+    bucket_name: process.env.S3_BUCKET,
+    bucket_region: process.env.BUCKET_REGION,
     allow_api_access: true,
     allow_streaming_from_bucket: true,
   },
