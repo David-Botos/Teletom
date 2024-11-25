@@ -24,7 +24,7 @@ export default function WebRTCClient() {
     const voiceClient = new RTVIClient({
       transport: new DailyTransport(),
       params: {
-        baseUrl: process.env.NEXT_PUBLIC_BASE_URL || '/api',
+        baseUrl: '/api',
         requestData: {
           services: defaultServices,
           config: defaultConfig,

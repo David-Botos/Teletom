@@ -1,36 +1,30 @@
-"use client";
+'use client';
 
-import { Ear, Loader2 } from "lucide-react";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { RTVIError, RTVIEvent, RTVIMessage } from "realtime-ai";
-import {
-  useRTVIClient,
-  useRTVIClientEvent,
-  useRTVIClientTransportState,
-} from "realtime-ai-react";
+import { Ear, Loader2 } from 'lucide-react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { RTVIError, RTVIEvent, RTVIMessage } from 'realtime-ai';
+import { useRTVIClient, useRTVIClientEvent, useRTVIClientTransportState } from 'realtime-ai-react';
 
-import { AppContext } from "./context";
-import Session from "./Session";
-import { Configure } from "./Setup";
-import { Alert } from "./ui/alert";
-import { Button } from "./ui/button";
-import * as Card from "./ui/card";
+import { AppContext } from './context';
+import Session from './Session';
+import { Configure } from './Setup';
+import { Alert } from './ui/alert';
+import { Button } from './ui/button';
+import * as Card from './ui/card';
 
 const status_text = {
-  idle: "Initializing...",
-  initialized: "Start",
-  authenticating: "Requesting bot...",
-  connecting: "Connecting...",
-  disconnected: "Start",
+  idle: 'Initializing...',
+  initialized: 'Start',
+  authenticating: 'Requesting bot...',
+  connecting: 'Connecting...',
+  disconnected: 'Start',
 };
 
 export default function CallUI() {
   const voiceClient = useRTVIClient()!;
   const transportState = useRTVIClientTransportState();
 
-  const [appState, setAppState] = useState<
-    "idle" | "ready" | "connecting" | "connected"
-  >("idle");
+  const [appState, setAppState] = useState<'idle' | 'ready' | 'connecting' | 'connected'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [startAudioOff, setStartAudioOff] = useState<boolean>(false);
   const mountedRef = useRef<boolean>(false);
@@ -68,20 +62,20 @@ export default function CallUI() {
     // so this effect helps avoid excess inline conditionals.
     console.log(transportState);
     switch (transportState) {
-      case "initialized":
-      case "disconnected":
-        setAppState("ready");
+      case 'initialized':
+      case 'disconnected':
+        setAppState('ready');
         break;
-      case "authenticating":
-      case "connecting":
-        setAppState("connecting");
+      case 'authenticating':
+      case 'connecting':
+        setAppState('connecting');
         break;
-      case "connected":
-      case "ready":
-        setAppState("connected");
+      case 'connected':
+      case 'ready':
+        setAppState('connected');
         break;
       default:
-        setAppState("idle");
+        setAppState('idle');
     }
   }, [transportState]);
 
@@ -93,9 +87,16 @@ export default function CallUI() {
       // Disable the mic until the bot has joined
       // to avoid interrupting the bot's welcome message
       voiceClient.enableMic(false);
+      const connectionPromise = new Promise<void>((resolve) => {
+        voiceClient.on('connected', () => resolve());
+      });
       await voiceClient.connect();
+      await connectionPromise;
+      const authBundle = voiceClient.authBundle;
+      console.log('Full auth bundle:', authBundle);
+      console.log('Room URL:', authBundle?.room_url);
     } catch (e) {
-      setError((e as RTVIError).message || "Unknown error occured");
+      setError((e as RTVIError).message || 'Unknown error occured');
       voiceClient.disconnect();
     }
   }
@@ -118,18 +119,12 @@ export default function CallUI() {
   }
 
   // Connected: show session view
-  if (appState === "connected") {
-    return (
-      <Session
-        state={transportState}
-        onLeave={() => leave()}
-        startAudioOff={startAudioOff}
-      />
-    );
+  if (appState === 'connected') {
+    return <Session state={transportState} onLeave={() => leave()} startAudioOff={startAudioOff} />;
   }
 
   // Default: show setup view
-  const isReady = appState === "ready";
+  const isReady = appState === 'ready';
 
   return (
     <Card.Card shadow className="animate-appear max-w-lg">

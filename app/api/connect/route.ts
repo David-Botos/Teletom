@@ -28,7 +28,6 @@ export async function POST(request: Request) {
     config: [...config],
     rtvi_client_version,
   };
-  ``;
 
   const req = await fetch(process.env.DAILY_BOTS_URL, {
     method: 'POST',
