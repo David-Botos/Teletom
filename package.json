@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "patch-package"
+    "lint": "next lint"
   },
   "dependencies": {
     "@daily-co/realtime-ai-daily": "^0.2.1",
@@ -44,10 +43,5 @@
     "postcss-nesting": "^13.0.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "realtime-ai@0.2.1": "patches/realtime-ai@0.2.1.patch"
-    }
   }
 }

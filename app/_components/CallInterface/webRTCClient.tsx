@@ -11,6 +11,7 @@ import { AppProvider } from './context';
 import Header from './Header';
 import Splash from './Splash';
 import { BOT_READY_TIMEOUT, defaultConfig, defaultServices } from '../../../rtvi.config';
+import { customConnectHandler } from './customConnectHandler';
 
 export default function WebRTCClient() {
   const [showSplash, setShowSplash] = useState(true);
@@ -31,6 +32,7 @@ export default function WebRTCClient() {
         },
       },
       timeout: BOT_READY_TIMEOUT,
+      customConnectHandler,
     });
 
     const llmHelper = new LLMHelper({});
