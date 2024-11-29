@@ -11,7 +11,7 @@ import { AppProvider } from './context';
 import Header from './Header';
 import Splash from './Splash';
 import { BOT_READY_TIMEOUT, defaultConfig, defaultServices } from '../../../rtvi.config';
-import { customConnectHandler } from './customConnectHandler';
+import { customConnectHandler } from '../../../utils/rtvi/customConnectHandler';
 
 export default function WebRTCClient() {
   const [showSplash, setShowSplash] = useState(true);

@@ -23,7 +23,6 @@ const status_text = {
 export default function CallUI() {
   const voiceClient = useRTVIClient()!;
   const transportState = useRTVIClientTransportState();
-
   const [appState, setAppState] = useState<'idle' | 'ready' | 'connecting' | 'connected'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [startAudioOff, setStartAudioOff] = useState<boolean>(false);

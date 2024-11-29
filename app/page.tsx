@@ -1,6 +1,6 @@
 'use client';
 import { useRef } from 'react';
-import WebRTCClient from './_components/CallInterface/webRTCClient';
+import WebRTCClient from './_components/callInterface/webRTCClient';
 import { CalendarComponent } from './_components/dndCalendar';
 import { useAvailableHeight } from './_hooks/useAvailableHeight';
 
