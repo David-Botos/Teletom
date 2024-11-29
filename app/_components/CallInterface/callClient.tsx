@@ -92,9 +92,6 @@ export default function CallUI() {
       });
       await voiceClient.connect();
       await connectionPromise;
-      const authBundle = voiceClient.authBundle;
-      console.log('Full auth bundle:', authBundle);
-      console.log('Room URL:', authBundle?.room_url);
     } catch (e) {
       setError((e as RTVIError).message || 'Unknown error occured');
       voiceClient.disconnect();
