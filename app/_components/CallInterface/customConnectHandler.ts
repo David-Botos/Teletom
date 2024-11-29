@@ -1,12 +1,6 @@
-import { RTVIClientParams } from "realtime-ai";
+import { RTVIClientParams } from 'realtime-ai';
+import { storeRoomURL } from '@/utils/supabase/storeRoomURL';
 
-/**
- * Custom connection handler for RTVIClient
- * @param params - Client parameters including baseUrl and request data
- * @param timeout - Optional timeout handle for the connection attempt
- * @param abortController - Controller for aborting the connection attempt
- * @returns Promise resolving to the connection response
- */
 export const customConnectHandler = async (
   params: RTVIClientParams,
   timeout: ReturnType<typeof setTimeout> | undefined,
@@ -30,22 +24,23 @@ export const customConnectHandler = async (
       throw new Error(`Connection failed: ${response.status}`);
     }
 
-    // Clear the timeout since connection was successful
+    const responseData = await response.json();
+    await storeRoomURL(responseData.room_url);
+
     if (timeout) {
       clearTimeout(timeout);
     }
 
-    return await response.json();
+    return responseData;
   } catch (error) {
-    // If the error was due to abort signal, rethrow it
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    
     if (error instanceof Error && error.name === 'AbortError') {
       throw error;
     }
     
-    // Clear timeout and rethrow the error
-    if (timeout) {
-      clearTimeout(timeout);
-    }
     throw error;
   }
 };

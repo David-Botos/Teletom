@@ -14,21 +14,24 @@ export type Database = {
           created_at: string
           extracted_data: Json | null
           id: number
-          s3_recordings: Json | null
+          room_url: string | null
+          s3_url: string | null
           transcription: string | null
         }
         Insert: {
           created_at?: string
           extracted_data?: Json | null
           id?: number
-          s3_recordings?: Json | null
+          room_url?: string | null
+          s3_url?: string | null
           transcription?: string | null
         }
         Update: {
           created_at?: string
           extracted_data?: Json | null
           id?: number
-          s3_recordings?: Json | null
+          room_url?: string | null
+          s3_url?: string | null
           transcription?: string | null
         }
         Relationships: []
