@@ -1,5 +1,5 @@
 import { RTVIClientParams } from 'realtime-ai';
-import { storeRoomURL } from '@/utils/supabase/storeRoomURL';
+import { storeS3Data } from '@/utils/supabase/storeS3Data';
 
 export const customConnectHandler = async (
   params: RTVIClientParams,
@@ -25,7 +25,9 @@ export const customConnectHandler = async (
     }
 
     const responseData = await response.json();
-    await storeRoomURL(responseData.room_url);
+
+    // store the room_url & the s3_folder_directory
+    await storeS3Data(responseData.room_url);
 
     if (timeout) {
       clearTimeout(timeout);
@@ -36,11 +38,11 @@ export const customConnectHandler = async (
     if (timeout) {
       clearTimeout(timeout);
     }
-    
+
     if (error instanceof Error && error.name === 'AbortError') {
       throw error;
     }
-    
+
     throw error;
   }
 };

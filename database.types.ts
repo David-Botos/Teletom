@@ -15,24 +15,24 @@ export type Database = {
           extracted_data: Json | null
           id: number
           room_url: string | null
-          s3_url: string | null
-          transcription: string | null
+          s3_folder_dir: string | null
+          transcription_s3_url: string | null
         }
         Insert: {
           created_at?: string
           extracted_data?: Json | null
           id?: number
           room_url?: string | null
-          s3_url?: string | null
-          transcription?: string | null
+          s3_folder_dir?: string | null
+          transcription_s3_url?: string | null
         }
         Update: {
           created_at?: string
           extracted_data?: Json | null
           id?: number
           room_url?: string | null
-          s3_url?: string | null
-          transcription?: string | null
+          s3_folder_dir?: string | null
+          transcription_s3_url?: string | null
         }
         Relationships: []
       }
