@@ -1,26 +1,28 @@
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/database.types';
-import { constructS3Directory } from './constructS3Directory';
-
 export const storeS3Data = async (roomUrl: string): Promise<void> => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  console.log('🟦 storeS3Data client function called');
+  console.log('🔍 Received roomUrl:', roomUrl);
+  
+  try {
+    console.log('🚀 Sending POST request to /api/store-s3-data');
+    const response = await fetch('/api/store-s3-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ roomUrl }),
+    });
 
-  if (!url || !key) {
-    throw new Error('Missing Supabase credentials');
-  }
+    console.log('📨 Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Server responded with error:', response.status, errorText);
+      throw new Error(`Failed to store room URL: ${response.status} - ${errorText}`);
+    }
 
-  const s3_directory = constructS3Directory(roomUrl);
-
-  const supabase = createClient<Database>(url, key);
-
-  const { error } = await supabase.from('calls').insert({
-    room_url: roomUrl,
-    s3_folder_dir: s3_directory,
-    created_at: new Date().toISOString(),
-  });
-
-  if (error) {
-    throw new Error(`Failed to store room URL: ${error.message}`);
+    console.log('✅ Successfully stored S3 data');
+  } catch (error) {
+    console.error('🔴 Error in storeS3Data:', error);
+    throw error;
   }
 };

@@ -1,12 +1,14 @@
 import { RTVIClientParams } from 'realtime-ai';
 import { storeS3Data } from '@/utils/supabase/storeS3Data';
+import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 
 export const customConnectHandler = async (
   params: RTVIClientParams,
   timeout: ReturnType<typeof setTimeout> | undefined,
   abortController: AbortController
-): Promise<void> => {
+): Promise<DailyTransportAuthBundle> => {
   try {
+    console.log('customConnectHandler has been called');
     const response = await fetch(params.baseUrl + '/connect', {
       method: 'POST',
       mode: 'cors',
@@ -25,14 +27,14 @@ export const customConnectHandler = async (
     }
 
     const responseData = await response.json();
-
+    
+    console.log('customConnectHandler.ts is returning this authBundle: ', responseData);
     // store the room_url & the s3_folder_directory
     await storeS3Data(responseData.room_url);
 
     if (timeout) {
       clearTimeout(timeout);
     }
-
     return responseData;
   } catch (error) {
     if (timeout) {
