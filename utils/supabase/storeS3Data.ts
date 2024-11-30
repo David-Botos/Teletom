@@ -1,7 +1,7 @@
-export const storeS3Data = async (roomUrl: string): Promise<void> => {
+export const storeS3Data = async (roomUrl: string): Promise<string> => {
   console.log('🟦 storeS3Data client function called');
   console.log('🔍 Received roomUrl:', roomUrl);
-  
+
   try {
     console.log('🚀 Sending POST request to /api/store-s3-data');
     const response = await fetch('/api/store-s3-data', {
@@ -20,7 +20,10 @@ export const storeS3Data = async (roomUrl: string): Promise<void> => {
       throw new Error(`Failed to store room URL: ${response.status} - ${errorText}`);
     }
 
-    console.log('✅ Successfully stored S3 data');
+    const data = await response.json();
+    console.log('✅ Successfully stored S3 data with ID:', data.id);
+    return data.id;
+
   } catch (error) {
     console.error('🔴 Error in storeS3Data:', error);
     throw error;
