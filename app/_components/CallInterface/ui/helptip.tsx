@@ -1,7 +1,7 @@
 import React from "react";
 import { CircleHelp } from "lucide-react";
 
-import { cn } from "@/app/_components/CallInterface/_utils/tailwind";
+import { cn } from "@/app/_components/callInterface/_utils/tailwind";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 

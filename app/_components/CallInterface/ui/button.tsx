@@ -2,7 +2,7 @@ import React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, VariantProps } from "class-variance-authority";
 
-import { cn } from "@/app/_components/CallInterface/_utils/tailwind";
+import { cn } from "@/app/_components/callInterface/_utils/tailwind";
 
 const buttonVariants = cva(
   "inline-flex gap-2 items-center justify-center whitespace-nowrap rounded-xl border text-base font-semibold ring-ring transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&>svg]:size-5",

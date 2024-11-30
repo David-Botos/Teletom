@@ -2,7 +2,7 @@ import React from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { CircleAlert } from "lucide-react";
 
-import { cn } from "@/app/_components/CallInterface/_utils/tailwind";
+import { cn } from "@/app/_components/callInterface/_utils/tailwind";
 
 const alertVariants = cva("text-left border border-black rounded-lg p-4", {
   variants: {

@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../../ui/tooltip";
-import { cn } from "@/app/_components/CallInterface/_utils/tailwind";
+import { cn } from "@/app/_components/callInterface/_utils/tailwind";
 
 import styles from "./styles.module.css";
 

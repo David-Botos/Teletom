@@ -1,4 +1,4 @@
-import ExpiryTimer from "@/app/_components/CallInterface/Header/ExpiryTimer";
+import ExpiryTimer from "@/app/_components/callInterface/Header/ExpiryTimer";
 
 export function Header() {
   return (

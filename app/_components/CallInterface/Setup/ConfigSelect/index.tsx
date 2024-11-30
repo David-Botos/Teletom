@@ -10,24 +10,24 @@ import React, {
 } from "react";
 import { RTVIClientConfigOption } from "realtime-ai";
 
-import { AppContext } from "@/app/_components/CallInterface/context";
+import { AppContext } from "@/app/_components/callInterface/context";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/app/_components/CallInterface/ui/accordion";
-import { Button } from "@/app/_components/CallInterface/ui/button";
-import { Field } from "@/app/_components/CallInterface/ui/field";
-import { Label } from "@/app/_components/CallInterface/ui/label";
-import { Select } from "@/app/_components/CallInterface/ui/select";
+} from "@/app/_components/callInterface/ui/accordion";
+import { Button } from "@/app/_components/callInterface/ui/button";
+import { Field } from "@/app/_components/callInterface/ui/field";
+import { Label } from "@/app/_components/callInterface/ui/label";
+import { Select } from "@/app/_components/callInterface/ui/select";
 import {
   defaultLLMPrompt,
   LANGUAGES,
   LLM_MODEL_CHOICES,
   PRESET_CHARACTERS,
 } from "@/rtvi.config";
-import { cn } from "@/app/_components/CallInterface/_utils/tailwind";
+import { cn } from "@/app/_components/callInterface/_utils/tailwind";
 
 import Prompt from "../Prompt";
 import StopSecs from "../StopSecs";
