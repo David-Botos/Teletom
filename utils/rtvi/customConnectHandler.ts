@@ -1,12 +1,11 @@
 import { RTVIClientParams } from 'realtime-ai';
 import { storeS3Data } from '@/utils/supabase/storeS3Data';
-import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 
 export const customConnectHandler = async (
   params: RTVIClientParams,
   timeout: ReturnType<typeof setTimeout> | undefined,
   abortController: AbortController
-): Promise<DailyTransportAuthBundle> => {
+): Promise<void> => {
   try {
     console.log('customConnectHandler has been called');
     const response = await fetch(params.baseUrl + '/connect', {
