@@ -11,9 +11,11 @@ import { Configure } from './Setup';
 import { Alert } from './ui/alert';
 import { Button } from './ui/button';
 import * as Card from './ui/card';
-import { fetchRecording } from '@/utils/s3/fetchRecording';
+import { attemptFetchRecordings, fetchRecording } from '@/utils/s3/fetchRecording';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
+import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
+import { UrlSource } from '@deepgram/sdk';
 
 const status_text = {
   idle: 'Initializing...',
@@ -108,46 +110,38 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
     // Disconnect the voice client
     await voiceClient.disconnect();
 
-    const recordingStoragePromise = new Promise((resolve, reject) => {
-      console.log('🪢 Setting up storage promise...');
-
-      // Create one-time event listener for storage completion
-      const handleStorageComplete = (data: StorageItemStoredData) => {
-        console.log('📥 Storage event received: ', data);
-        voiceClient.off(RTVIEvent.StorageItemStored, handleStorageComplete);
-        resolve(data);
-      };
-
-      // Add event listener
-      voiceClient.on(RTVIEvent.StorageItemStored, handleStorageComplete);
-      console.log('👂 Recording storage event listener attached');
-
-      // Add timeout to prevent hanging
-      setTimeout(() => {
-        voiceClient.off(RTVIEvent.StorageItemStored, handleStorageComplete);
-        console.log('❌👂 Recording storage event listener hung and rejected');
-        reject(new Error('Storage timeout'));
-      }, 30000); // 30 second timeout
-    });
-
     try {
-      const storageData = await recordingStoragePromise;
-      let cboRecording = null;
-      let botRecording = null;
-      console.log('📨 storageData received from recordingStoragePromise: ', storageData);
-      if (authBundleRef.current) {
-        const s3_prefix = constructS3Directory(authBundleRef.current.room_url);
-        cboRecording = fetchRecording(s3_prefix, false);
-        botRecording = fetchRecording(s3_prefix, true);
-      } else {
+      if (!authBundleRef.current) {
         throw new Error('❌ authBundleRef.current does not exist - callClient.tsx > leave()');
       }
-      // transcribe the recording
-      // store the recording
+
+      // Construct S3 directory
+      const s3_prefix = constructS3Directory(authBundleRef.current.room_url);
+
+      // Fetch recordings with polling mechanism
+      console.log('🔄 Starting recording fetch attempts...');
+      const [cboRecording, botRecording] = await attemptFetchRecordings(s3_prefix);
+
+      if (!cboRecording || !botRecording) {
+        throw new Error('Failed to fetch one or both recordings');
+      }
+
+      // Transcribe cboRecording
+      console.log('🛜 Starting transcription on CBO recording presigned url...');
+      const cboTranscription = await transcribeURL(cboRecording);
+      console.log('📝 cboTranscription returned with the value: ', cboTranscription);
+      // store the cbo transcription in s3 and its location in supabase
+
+      // Transcribe botRecording
+      console.log('🛜 Starting transcription on bot recording presigned url...');
+      const botTranscription = await transcribeURL(botRecording);
+      console.log('📝 botTranscription returned with the value: ', botTranscription);
+      // store the bot transcription in s3 and its location in supabase
+
       // analyze the recording
       // store the analysis
     } catch (error) {
-      console.error('❌ Error during the recordingStoragePromise resolution process:', error);
+      console.error('❌ Error during the recording fetch and transcription process:', error);
       throw error;
     }
   }
