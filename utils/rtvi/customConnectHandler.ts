@@ -1,10 +1,13 @@
 import { RTVIClientParams } from 'realtime-ai';
 import { storeS3Data } from '@/utils/supabase/storeS3Data';
+import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
+import { MutableRefObject } from 'react';
 
 export const customConnectHandler = async (
   params: RTVIClientParams,
   timeout: ReturnType<typeof setTimeout> | undefined,
-  abortController: AbortController
+  abortController: AbortController,
+  authBundleRef: MutableRefObject<DailyTransportAuthBundle | null>
 ): Promise<void> => {
   try {
     console.log('customConnectHandler has been called');
@@ -26,8 +29,10 @@ export const customConnectHandler = async (
     }
 
     const responseData = await response.json();
-    
     console.log('customConnectHandler.ts is returning this authBundle: ', responseData);
+    authBundleRef.current = responseData;
+    console.log('📥 authBundleRef received the value: ', authBundleRef.current);
+
     // store the room_url & the s3_folder_directory
     await storeS3Data(responseData.room_url);
 

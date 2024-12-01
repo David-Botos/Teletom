@@ -1,8 +1,8 @@
 'use client';
 
 import { Ear, Loader2 } from 'lucide-react';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { RTVIError, RTVIEvent, RTVIMessage } from 'realtime-ai';
+import { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { RTVIError, RTVIEvent, RTVIMessage, StorageItemStoredData } from 'realtime-ai';
 import { useRTVIClient, useRTVIClientEvent, useRTVIClientTransportState } from 'realtime-ai-react';
 
 import { AppContext } from './context';
@@ -11,6 +11,9 @@ import { Configure } from './Setup';
 import { Alert } from './ui/alert';
 import { Button } from './ui/button';
 import * as Card from './ui/card';
+import { fetchRecording } from '@/utils/s3/fetchRecording';
+import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
+import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 
 const status_text = {
   idle: 'Initializing...',
@@ -20,7 +23,11 @@ const status_text = {
   disconnected: 'Start',
 };
 
-export default function CallUI() {
+interface CallUIProps {
+  authBundleRef: MutableRefObject<DailyTransportAuthBundle | null>;
+}
+
+export default function CallUI({ authBundleRef }: CallUIProps) {
   const voiceClient = useRTVIClient()!;
   const transportState = useRTVIClientTransportState();
   const [appState, setAppState] = useState<'idle' | 'ready' | 'connecting' | 'connected'>('idle');
@@ -98,7 +105,51 @@ export default function CallUI() {
   }
 
   async function leave() {
+    // Disconnect the voice client
     await voiceClient.disconnect();
+
+    const recordingStoragePromise = new Promise((resolve, reject) => {
+      console.log('🪢 Setting up storage promise...');
+
+      // Create one-time event listener for storage completion
+      const handleStorageComplete = (data: StorageItemStoredData) => {
+        console.log('📥 Storage event received: ', data);
+        voiceClient.off(RTVIEvent.StorageItemStored, handleStorageComplete);
+        resolve(data);
+      };
+
+      // Add event listener
+      voiceClient.on(RTVIEvent.StorageItemStored, handleStorageComplete);
+      console.log('👂 Recording storage event listener attached');
+
+      // Add timeout to prevent hanging
+      setTimeout(() => {
+        voiceClient.off(RTVIEvent.StorageItemStored, handleStorageComplete);
+        console.log('❌👂 Recording storage event listener hung and rejected');
+        reject(new Error('Storage timeout'));
+      }, 30000); // 30 second timeout
+    });
+
+    try {
+      const storageData = await recordingStoragePromise;
+      let cboRecording = null;
+      let botRecording = null;
+      console.log('📨 storageData received from recordingStoragePromise: ', storageData);
+      if (authBundleRef.current) {
+        const s3_prefix = constructS3Directory(authBundleRef.current.room_url);
+        cboRecording = fetchRecording(s3_prefix, false);
+        botRecording = fetchRecording(s3_prefix, true);
+      } else {
+        throw new Error('❌ authBundleRef.current does not exist - callClient.tsx > leave()');
+      }
+      // transcribe the recording
+      // store the recording
+      // analyze the recording
+      // store the analysis
+    } catch (error) {
+      console.error('❌ Error during the recordingStoragePromise resolution process:', error);
+      throw error;
+    }
   }
 
   /**
