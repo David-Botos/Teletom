@@ -11,28 +11,55 @@ export type Database = {
     Tables: {
       calls: {
         Row: {
+          bot_transcription: string | null
+          cbo_transcription: string | null
           created_at: string
           extracted_data: Json | null
           id: number
           room_url: string | null
           s3_folder_dir: string | null
-          transcription_s3_url: string | null
+        }
+        Insert: {
+          bot_transcription?: string | null
+          cbo_transcription?: string | null
+          created_at?: string
+          extracted_data?: Json | null
+          id?: number
+          room_url?: string | null
+          s3_folder_dir?: string | null
+        }
+        Update: {
+          bot_transcription?: string | null
+          cbo_transcription?: string | null
+          created_at?: string
+          extracted_data?: Json | null
+          id?: number
+          room_url?: string | null
+          s3_folder_dir?: string | null
+        }
+        Relationships: []
+      }
+      transcriptions: {
+        Row: {
+          created_at: string
+          duration: number | null
+          full_transcript: string | null
+          id: number
+          individual_words: Json | null
         }
         Insert: {
           created_at?: string
-          extracted_data?: Json | null
+          duration?: number | null
+          full_transcript?: string | null
           id?: number
-          room_url?: string | null
-          s3_folder_dir?: string | null
-          transcription_s3_url?: string | null
+          individual_words?: Json | null
         }
         Update: {
           created_at?: string
-          extracted_data?: Json | null
+          duration?: number | null
+          full_transcript?: string | null
           id?: number
-          room_url?: string | null
-          s3_folder_dir?: string | null
-          transcription_s3_url?: string | null
+          individual_words?: Json | null
         }
         Relationships: []
       }
