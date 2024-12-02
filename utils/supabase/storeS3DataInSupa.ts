@@ -1,5 +1,5 @@
-export const storeS3Data = async (roomUrl: string): Promise<string> => {
-  console.log('🟦 storeS3Data client function called');
+export const storeS3DataInSupa = async (roomUrl: string): Promise<string> => {
+  console.log('🟦 storeS3DataInSupa client function called');
   console.log('🔍 Received roomUrl:', roomUrl);
 
   try {
@@ -25,7 +25,7 @@ export const storeS3Data = async (roomUrl: string): Promise<string> => {
     return data.id;
 
   } catch (error) {
-    console.error('🔴 Error in storeS3Data:', error);
+    console.error('🔴 Error in storeS3DataInSupa:', error);
     throw error;
   }
 };

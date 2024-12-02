@@ -1,5 +1,5 @@
 import { RTVIClientParams } from 'realtime-ai';
-import { storeS3Data } from '@/utils/supabase/storeS3Data';
+import { storeS3DataInSupa } from '@/utils/supabase/storeS3DataInSupa';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { MutableRefObject } from 'react';
 
@@ -34,7 +34,7 @@ export const customConnectHandler = async (
     console.log('📥 authBundleRef received the value: ', authBundleRef.current);
 
     // store the room_url & the s3_folder_directory
-    await storeS3Data(responseData.room_url);
+    await storeS3DataInSupa(responseData.room_url);
 
     if (timeout) {
       clearTimeout(timeout);
