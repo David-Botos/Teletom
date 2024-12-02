@@ -10,7 +10,7 @@ export const customConnectHandler = async (
   authBundleRef: MutableRefObject<DailyTransportAuthBundle | null>
 ): Promise<void> => {
   try {
-    console.log('customConnectHandler has been called');
+    console.log('🔵 customConnectHandler has been called');
     const response = await fetch(params.baseUrl + '/connect', {
       method: 'POST',
       mode: 'cors',

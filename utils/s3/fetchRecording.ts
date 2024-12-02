@@ -22,7 +22,7 @@ export async function fetchRecording(
   prefix: string,
   returnBot: boolean = false
 ): Promise<UrlSource> {
-  console.log(`🏁 Starting to fetch ${returnBot ? 'bot' : 'cbo'} recording`);
+  console.log(`🔵 Starting to fetch ${returnBot ? 'bot' : 'cbo'} recording`);
   // First, list the files in the directory
   const listResponse = await fetch(`/api/list-s3-files?prefix=${encodeURIComponent(prefix)}`);
   const listData: ListFilesResponse = await listResponse.json();

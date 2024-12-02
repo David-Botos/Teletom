@@ -2,7 +2,7 @@
 
 import { Ear, Loader2 } from 'lucide-react';
 import { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { RTVIError, RTVIEvent, RTVIMessage, StorageItemStoredData } from 'realtime-ai';
+import { RTVIError, RTVIEvent, RTVIMessage } from 'realtime-ai';
 import { useRTVIClient, useRTVIClientEvent, useRTVIClientTransportState } from 'realtime-ai-react';
 
 import { AppContext } from './context';
@@ -15,6 +15,7 @@ import { attemptFetchRecordings } from '@/utils/s3/fetchRecording';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
+import { RawTranscription } from '@/utils/supabase/storeTranscriptionInSupa';
 
 const status_text = {
   idle: 'Initializing...',
@@ -127,14 +128,15 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
 
       // Transcribe cboRecording
       console.log('🛜 Starting transcription on CBO recording presigned url...');
-      const cboTranscription = await transcribeURL(cboRecording);
+      const cboTranscription: RawTranscription = await transcribeURL(cboRecording);
       console.log('📝 cboTranscription returned with the value: ', cboTranscription);
       // store the cbo transcription in s3 and its location in supabase
 
       // Transcribe botRecording
       console.log('🛜 Starting transcription on bot recording presigned url...');
-      const botTranscription = await transcribeURL(botRecording);
+      const botTranscription: RawTranscription = await transcribeURL(botRecording);
       console.log('📝 botTranscription returned with the value: ', botTranscription);
+
       // store the bot transcription in s3 and its location in supabase
 
       // analyze the recording

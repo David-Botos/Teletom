@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     );
 
   } catch (error) {
-    console.error('🔴 Error in API route:', error);
+    console.error('❌ Error in API route:', error);
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'Unknown error'
