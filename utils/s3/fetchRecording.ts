@@ -20,11 +20,16 @@ interface SignedUrlResponse {
 
 export async function fetchRecording(
   prefix: string,
-  returnBot: boolean = true
+  returnBot: boolean = false
 ): Promise<UrlSource> {
+  console.log(`🏁 Starting to fetch ${returnBot ? 'bot' : 'cbo'} recording`);
   // First, list the files in the directory
   const listResponse = await fetch(`/api/list-s3-files?prefix=${encodeURIComponent(prefix)}`);
   const listData: ListFilesResponse = await listResponse.json();
+  console.log(
+    '📥 These are the files that are listed in the s3 directory: ',
+    JSON.stringify(listData.files)
+  );
 
   if (!listResponse.ok) {
     throw new Error(listData.error || 'Failed to list files');
@@ -39,6 +44,7 @@ export async function fetchRecording(
   if (!selectedFile?.key) {
     throw new Error(`Unable to find ${returnBot ? 'bot recording' : 'CBO recording'} file`);
   }
+  console.log('👉 This is the file that was selected: ', JSON.stringify(selectedFile));
 
   // Get signed URL for the selected file
   const urlResponse = await fetch(

@@ -11,11 +11,10 @@ import { Configure } from './Setup';
 import { Alert } from './ui/alert';
 import { Button } from './ui/button';
 import * as Card from './ui/card';
-import { attemptFetchRecordings, fetchRecording } from '@/utils/s3/fetchRecording';
+import { attemptFetchRecordings } from '@/utils/s3/fetchRecording';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
-import { UrlSource } from '@deepgram/sdk';
 
 const status_text = {
   idle: 'Initializing...',
