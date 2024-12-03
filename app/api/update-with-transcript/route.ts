@@ -1,23 +1,25 @@
+import { Database } from '@/database.types';
 import { createClient } from '@supabase/supabase-js';
-import { NextResponse } from 'next/server';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function POST(request: Request) {
   try {
     // Get the request body
     const { id, fk_transcriptions } = await request.json();
+    console.log('📥 Received id:', id);
+    console.log('📥 Received fk_transcriptions:', fk_transcriptions);
 
-    // Validate required fields
-    if (!id || fk_transcriptions === undefined) {
-      return NextResponse.json(
-        { error: 'Missing required fields: id and fk_transcriptions' },
-        { status: 400 }
-      );
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || !serviceKey) {
+      console.error('❌ Missing Supabase credentials');
+      return new Response('Missing Supabase credentials', { status: 500 });
     }
+
+    console.log('🔑 Initializing Supabase client with URL:', url);
+    const supabase = createClient<Database>(url, serviceKey);
+
+    console.log('💾 Attempting to update data into Supabase');
 
     // Update the call record
     const { data, error } = await supabase
@@ -27,14 +29,33 @@ export async function POST(request: Request) {
       .select();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('❌ Supabase insert error:', error);
+      throw error;
     }
 
-    return NextResponse.json({
-      message: 'Call updated successfully',
-      data,
+    if (!data) {
+      throw new Error('No data returned from insert');
+    }
+
+    console.log('✅ Successfully stored data in Supabase');
+    return new Response(JSON.stringify({ data }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   } catch (error) {
-    return NextResponse.json({ error: `Internal server error: ${error}` }, { status: 500 });
+    console.error('❌ Error in API route:', error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
   }
 }

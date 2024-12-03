@@ -102,7 +102,7 @@ const getCallUUID = async (room_url: string): Promise<number> => {
     // GET req
     console.log('🚀 Sending GET request to /api/get-call-uuid');
     const res = await fetch('/api/get-call-uuid', {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
