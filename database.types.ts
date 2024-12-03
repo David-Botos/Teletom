@@ -11,33 +11,35 @@ export type Database = {
     Tables: {
       calls: {
         Row: {
-          bot_transcription: string | null
-          cbo_transcription: string | null
           created_at: string
-          extracted_data: Json | null
+          fk_transcriptions: number | null
           id: number
           room_url: string | null
           s3_folder_dir: string | null
         }
         Insert: {
-          bot_transcription?: string | null
-          cbo_transcription?: string | null
           created_at?: string
-          extracted_data?: Json | null
+          fk_transcriptions?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
         }
         Update: {
-          bot_transcription?: string | null
-          cbo_transcription?: string | null
           created_at?: string
-          extracted_data?: Json | null
+          fk_transcriptions?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "calls_fk_transcriptions_fkey"
+            columns: ["fk_transcriptions"]
+            isOneToOne: false
+            referencedRelation: "transcriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transcriptions: {
         Row: {
