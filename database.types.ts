@@ -9,9 +9,34 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analysis: {
+        Row: {
+          additional_data: Json | null
+          created_at: string
+          extracted_events: Json | null
+          extracted_num_beds: number | null
+          id: number
+        }
+        Insert: {
+          additional_data?: Json | null
+          created_at?: string
+          extracted_events?: Json | null
+          extracted_num_beds?: number | null
+          id?: number
+        }
+        Update: {
+          additional_data?: Json | null
+          created_at?: string
+          extracted_events?: Json | null
+          extracted_num_beds?: number | null
+          id?: number
+        }
+        Relationships: []
+      }
       calls: {
         Row: {
           created_at: string
+          fk_analysis: number | null
           fk_transcriptions: number | null
           id: number
           room_url: string | null
@@ -19,6 +44,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          fk_analysis?: number | null
           fk_transcriptions?: number | null
           id?: number
           room_url?: string | null
@@ -26,12 +52,20 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          fk_analysis?: number | null
           fk_transcriptions?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "calls_fk_analysis_fkey"
+            columns: ["fk_analysis"]
+            isOneToOne: false
+            referencedRelation: "analysis"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "calls_fk_transcriptions_fkey"
             columns: ["fk_transcriptions"]
