@@ -15,7 +15,10 @@ import { attemptFetchRecordings } from '@/utils/s3/fetchRecording';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
-import { RawTranscription } from '@/utils/supabase/storeTranscriptionInSupa';
+import {
+  handleTranscriptUpload,
+  RawTranscription,
+} from '@/utils/supabase/storeTranscriptionInSupa';
 
 const status_text = {
   idle: 'Initializing...',
@@ -126,18 +129,19 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
         throw new Error('Failed to fetch one or both recordings');
       }
 
-      // Transcribe cboRecording
+      // Transcribe recordings with presigned s3 urls
       console.log('🛜 Starting transcription on CBO recording presigned url...');
       const cboTranscription: RawTranscription = await transcribeURL(cboRecording);
       console.log('📝 cboTranscription returned with the value: ', cboTranscription);
-      // store the cbo transcription in s3 and its location in supabase
-
-      // Transcribe botRecording
       console.log('🛜 Starting transcription on bot recording presigned url...');
       const botTranscription: RawTranscription = await transcribeURL(botRecording);
       console.log('📝 botTranscription returned with the value: ', botTranscription);
 
-      // store the bot transcription in s3 and its location in supabase
+      // Store the transcripts
+      console.log('🔵 Calling handleTranscriptUpload on cbo transcript...');
+      handleTranscriptUpload(cboTranscription, authBundleRef.current.room_url);
+      console.log('🔵 Calling handleTranscriptUpload on bot transcript...');
+      handleTranscriptUpload(botTranscription, authBundleRef.current.room_url);
 
       // analyze the recording
       // store the analysis
