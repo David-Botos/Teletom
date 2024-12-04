@@ -66,7 +66,10 @@ export const prepareTranscriptionData = (
   };
 };
 
-const storeTranscription = async (rawTranscription: RawTranscription): Promise<number> => {
+const storeTranscription = async (
+  rawTranscription: RawTranscription,
+  isBot: boolean
+): Promise<number> => {
   console.log('🔵 storeTranscription helper function called');
 
   // prep the body of req
@@ -80,7 +83,7 @@ const storeTranscription = async (rawTranscription: RawTranscription): Promise<n
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ transcript_data }),
+      body: JSON.stringify({ transcript_data, isBot }),
     });
 
     // handle error res
@@ -124,7 +127,7 @@ const getCallUUID = async (room_url: string): Promise<number> => {
   }
 };
 
-const updateCalls = async (transcriptUUID: number, callUUID: number) => {
+const updateCalls = async (transcriptUUID: number, callUUID: number, isBot: boolean) => {
   try {
     console.log('🚀 Sending GET request to /api/update-with-transcript');
     const res = await fetch('/api/update-with-transcript', {
@@ -132,7 +135,7 @@ const updateCalls = async (transcriptUUID: number, callUUID: number) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: callUUID, fk_transcriptions: transcriptUUID }),
+      body: JSON.stringify({ id: callUUID, transcriptUUID: transcriptUUID, isBot: isBot }),
     });
     return res;
   } catch (error) {
@@ -143,16 +146,19 @@ const updateCalls = async (transcriptUUID: number, callUUID: number) => {
 
 export const handleTranscriptUpload = async (
   rawTranscription: RawTranscription,
-  room_url: string
+  room_url: string,
+  isBot: boolean
 ) => {
-  const transcriptUUID = await storeTranscription(rawTranscription);
-  console.log('✅ Transcript is stored with uuid: ', transcriptUUID);
+  const transcriptUUID = await storeTranscription(rawTranscription, isBot);
+  console.log(`✅ ${isBot ? 'Bot' : 'CBO'} transcript is stored with uuid: `, transcriptUUID);
   const callUUID = await getCallUUID(room_url);
   console.log('✅ Fetched call uuid: ', callUUID);
-  const updateRes = await updateCalls(transcriptUUID, callUUID);
+  const updateRes = await updateCalls(transcriptUUID, callUUID, isBot);
   console.log(
     updateRes.ok
-      ? '🏁 Transcript uploaded and linked to calls table'
-      : '❌ Error occurred in the updateCall function'
+      ? `🏁 ${isBot ? 'Bot' : 'CBO'} transcript uploaded and linked to calls table`
+      : `❌ Error occurred when uploading the ${
+          isBot ? 'Bot' : 'CBO'
+        } transcript id to the calls table`
   );
 };

@@ -2,10 +2,15 @@ import { Database } from '@/database.types';
 import { TranscriptionRequest } from '@/utils/supabase/storeTranscriptionInSupa';
 import { createClient } from '@supabase/supabase-js';
 
+interface UploadTranscriptReqBody {
+  transcript_data: TranscriptionRequest;
+  isBot: boolean;
+}
+
 export async function POST(request: Request) {
   try {
-    const transcriptionData: TranscriptionRequest = await request.json();
-    console.log('📥 Received transcriptionData:', transcriptionData);
+    const { transcript_data, isBot }: UploadTranscriptReqBody = await request.json();
+    console.log('📥 Received transcript_data:', transcript_data);
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -19,14 +24,17 @@ export async function POST(request: Request) {
     const supabase = createClient<Database>(url, serviceKey);
 
     console.log('💾 Attempting to insert data into Supabase');
+    const insertData: Database['public']['Tables']['transcriptions']['Insert'] = {
+      duration: transcript_data.duration,
+      full_transcript: transcript_data.full_transcript,
+      individual_words: transcript_data.individual_words,
+      isBot: isBot,
+      created_at: new Date().toISOString(),
+    };
+
     const { data, error } = await supabase
       .from('transcriptions')
-      .insert({
-        duration: transcriptionData.duration,
-        full_transcript: transcriptionData.full_transcript,
-        individual_words: transcriptionData.individual_words,
-        created_at: new Date().toISOString(),
-      })
+      .insert(insertData)
       .select('id')
       .single();
 

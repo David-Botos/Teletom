@@ -140,9 +140,9 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
 
       // Store the transcripts
       console.log('🔵 Calling handleTranscriptUpload on cbo transcript...');
-      handleTranscriptUpload(cboTranscription, authBundleRef.current.room_url);
+      handleTranscriptUpload(cboTranscription, authBundleRef.current.room_url, false);
       console.log('🔵 Calling handleTranscriptUpload on bot transcript...');
-      handleTranscriptUpload(botTranscription, authBundleRef.current.room_url);
+      handleTranscriptUpload(botTranscription, authBundleRef.current.room_url, true);
 
       // Analyze the recording
       const truncCBOTranscript = cboTranscription.results.channels[0].alternatives[0].transcript;
