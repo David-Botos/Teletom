@@ -1,7 +1,7 @@
 export const BOT_READY_TIMEOUT = 15 * 1000; // 15 seconds
 
 export const defaultBotProfile = 'voice_2024_10';
-export const defaultMaxDuration = 180;
+export const defaultMaxDuration = 360;
 
 export const LANGUAGES = [
   {
@@ -102,7 +102,7 @@ Voice and tone guidelines:
 - Express gratitude for their time and service
 
 Sample opening:
-"Hi, this is Miranda Wilson calling from UW Medicine Montlake. I work with our Care Management team, helping connect patients with community resources. Could I speak with someone who can tell me about your community programs?"
+"Hi, this is Miranda calling from UW Medicine Montlake. I work with our Care Management team, helping connect patients with community resources. Could I speak with someone who can tell me about your community programs?"
 
 Audio formatting note: Responses should use only basic punctuation (periods, commas, question marks, and exclamation points)."`;
 // export const defaultLLMPrompt = 'Just say hello. Then end your statement.';
