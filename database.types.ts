@@ -37,7 +37,8 @@ export type Database = {
         Row: {
           created_at: string
           fk_analysis: number | null
-          fk_transcriptions: number | null
+          fk_transcription_bot: number | null
+          fk_transcription_cbo: number | null
           id: number
           room_url: string | null
           s3_folder_dir: string | null
@@ -45,7 +46,8 @@ export type Database = {
         Insert: {
           created_at?: string
           fk_analysis?: number | null
-          fk_transcriptions?: number | null
+          fk_transcription_bot?: number | null
+          fk_transcription_cbo?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
@@ -53,7 +55,8 @@ export type Database = {
         Update: {
           created_at?: string
           fk_analysis?: number | null
-          fk_transcriptions?: number | null
+          fk_transcription_bot?: number | null
+          fk_transcription_cbo?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
@@ -67,8 +70,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "calls_fk_transcriptions_fkey"
-            columns: ["fk_transcriptions"]
+            foreignKeyName: "calls_fk_transcription_bot_fkey"
+            columns: ["fk_transcription_bot"]
+            isOneToOne: false
+            referencedRelation: "transcriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calls_fk_transcription_cbo_fkey"
+            columns: ["fk_transcription_cbo"]
             isOneToOne: false
             referencedRelation: "transcriptions"
             referencedColumns: ["id"]
@@ -82,6 +92,7 @@ export type Database = {
           full_transcript: string | null
           id: number
           individual_words: Json | null
+          isBot: boolean | null
         }
         Insert: {
           created_at?: string
@@ -89,6 +100,7 @@ export type Database = {
           full_transcript?: string | null
           id?: number
           individual_words?: Json | null
+          isBot?: boolean | null
         }
         Update: {
           created_at?: string
@@ -96,6 +108,7 @@ export type Database = {
           full_transcript?: string | null
           id?: number
           individual_words?: Json | null
+          isBot?: boolean | null
         }
         Relationships: []
       }
