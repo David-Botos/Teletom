@@ -19,6 +19,7 @@ import {
   handleTranscriptUpload,
   RawTranscription,
 } from '@/utils/supabase/storeTranscriptionInSupa';
+import { handleAnalysis } from '@/utils/dataExtraction/handleAnalysis';
 
 const status_text = {
   idle: 'Initializing...',
@@ -143,8 +144,14 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       console.log('🔵 Calling handleTranscriptUpload on bot transcript...');
       handleTranscriptUpload(botTranscription, authBundleRef.current.room_url);
 
-      // analyze the recording
-      // store the analysis
+      // Analyze the recording
+      const truncCBOTranscript = cboTranscription.results.channels[0].alternatives[0].transcript;
+      console.log('truncCBOTranscript: ', truncCBOTranscript);
+      // const truncBotTranscript = botTranscription.results.channels[0].alternatives[0].transcript;
+      const extractedData = await handleAnalysis(truncCBOTranscript);
+      console.log('extractedData: ', JSON.stringify(extractedData));
+
+      // Store the analysis
     } catch (error) {
       console.error('❌ Error during the recording fetch and transcription process:', error);
       throw error;
