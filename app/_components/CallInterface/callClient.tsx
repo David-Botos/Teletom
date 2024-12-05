@@ -19,7 +19,8 @@ import {
   handleTranscriptUpload,
   RawTranscription,
 } from '@/utils/supabase/storeTranscriptionInSupa';
-import { handleAnalysis } from '@/utils/dataExtraction/handleAnalysis';
+import { BedsAndEventsOutput, handleAnalysis } from '@/utils/dataExtraction/handleAnalysis';
+import { formatExtractedData } from '@/utils/dataExtraction/formatConsoleLog';
 
 const status_text = {
   idle: 'Initializing...',
@@ -146,12 +147,13 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
 
       // Analyze the recording
       const truncCBOTranscript = cboTranscription.results.channels[0].alternatives[0].transcript;
-      console.log('truncCBOTranscript: ', truncCBOTranscript);
+      console.log('📝 TruncCBOTranscript: ', truncCBOTranscript);
       // const truncBotTranscript = botTranscription.results.channels[0].alternatives[0].transcript;
-      const extractedData = await handleAnalysis(truncCBOTranscript);
-      console.log('extractedData: ', JSON.stringify(extractedData));
+      const extractedData: BedsAndEventsOutput = await handleAnalysis(truncCBOTranscript);
+      console.log(formatExtractedData(extractedData));
 
       // Store the analysis
+      // for each event handle its upload to supa
     } catch (error) {
       console.error('❌ Error during the recording fetch and transcription process:', error);
       throw error;
