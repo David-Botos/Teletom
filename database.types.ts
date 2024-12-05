@@ -85,6 +85,50 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          created_at: string
+          event_desc: string | null
+          event_end: string | null
+          event_start: string | null
+          event_title: string | null
+          fk_call: number | null
+          id: number
+          isAllDay: boolean | null
+          isRecurring: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          event_desc?: string | null
+          event_end?: string | null
+          event_start?: string | null
+          event_title?: string | null
+          fk_call?: number | null
+          id?: number
+          isAllDay?: boolean | null
+          isRecurring?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          event_desc?: string | null
+          event_end?: string | null
+          event_start?: string | null
+          event_title?: string | null
+          fk_call?: number | null
+          id?: number
+          isAllDay?: boolean | null
+          isRecurring?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_fk_call_fkey"
+            columns: ["fk_call"]
+            isOneToOne: false
+            referencedRelation: "calls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transcriptions: {
         Row: {
           created_at: string
