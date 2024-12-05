@@ -1,4 +1,4 @@
-type ExtractedEvent = {
+export type ExtractedEvent = {
   event_title: string;
   start_date_time: string;
   end_date_time: string;

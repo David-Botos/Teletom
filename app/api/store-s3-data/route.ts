@@ -4,7 +4,7 @@ import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 
 export async function POST(request: Request) {
   console.log('🔵 /api/store-s3-data API route called');
-  
+
   try {
     const { roomUrl } = await request.json();
     console.log('📥 Received roomUrl:', roomUrl);
@@ -41,31 +41,27 @@ export async function POST(request: Request) {
     }
 
     if (!data) {
-      throw new Error('No data returned from insert');
+      throw new Error('❌ No data returned from insert');
     }
 
     console.log('✅ Successfully stored data in Supabase');
-    return new Response(
-      JSON.stringify({ id: data.id }), 
-      { 
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
+    return new Response(JSON.stringify({ id: data.id }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     console.error('❌ Error in API route:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'Unknown error'
+      JSON.stringify({
+        error: error instanceof Error ? error.message : 'Unknown error',
       }),
-      { 
+      {
         status: 500,
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
   }

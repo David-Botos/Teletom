@@ -100,7 +100,7 @@ const storeTranscription = async (
   }
 };
 
-const getCallUUID = async (room_url: string): Promise<number> => {
+export const getCallUUID = async (room_url: string): Promise<number> => {
   try {
     // GET req
     console.log('🚀 Sending GET request to /api/get-call-uuid');

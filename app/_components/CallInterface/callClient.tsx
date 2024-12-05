@@ -16,11 +16,13 @@ import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
 import {
+  getCallUUID,
   handleTranscriptUpload,
   RawTranscription,
 } from '@/utils/supabase/storeTranscriptionInSupa';
 import { BedsAndEventsOutput, handleAnalysis } from '@/utils/dataExtraction/handleAnalysis';
 import { formatExtractedData } from '@/utils/dataExtraction/formatConsoleLog';
+import { storeAnalysisInSupa } from '@/utils/supabase/storeAnalysisInSupa';
 
 const status_text = {
   idle: 'Initializing...',
@@ -153,6 +155,8 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       console.log(formatExtractedData(extractedData));
 
       // Store the analysis
+      const callUUID = await getCallUUID(authBundleRef.current.room_url);
+      storeAnalysisInSupa(extractedData, callUUID);
       // for each event handle its upload to supa
     } catch (error) {
       console.error('❌ Error during the recording fetch and transcription process:', error);
