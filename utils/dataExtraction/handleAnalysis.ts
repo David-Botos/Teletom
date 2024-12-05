@@ -17,13 +17,7 @@ export const handleAnalysis = async (transcript: string) => {
 
     const extractedInformation = await response.json();
     return extractedInformation;
-  } catch (error: any) {
-    // Re-throw with more context if it's a network error
-    if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-      throw new Error('Network error: Unable to connect to the analysis service', {
-        cause: error,
-      });
-    }
-    throw error; // Re-throw other errors
+  } catch (error) {
+    throw error;
   }
 };
