@@ -14,22 +14,25 @@ export type Database = {
           additional_data: Json | null
           created_at: string
           extracted_events: Json | null
-          extracted_num_beds: number | null
           id: number
+          num_avail_beds: number | null
+          num_total_beds: number | null
         }
         Insert: {
           additional_data?: Json | null
           created_at?: string
           extracted_events?: Json | null
-          extracted_num_beds?: number | null
           id?: number
+          num_avail_beds?: number | null
+          num_total_beds?: number | null
         }
         Update: {
           additional_data?: Json | null
           created_at?: string
           extracted_events?: Json | null
-          extracted_num_beds?: number | null
           id?: number
+          num_avail_beds?: number | null
+          num_total_beds?: number | null
         }
         Relationships: []
       }

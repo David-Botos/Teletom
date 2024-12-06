@@ -8,7 +8,8 @@ export type ExtractedEvent = {
 
 export type BedsAndEventsOutput = {
   correctness: boolean;
-  num_beds: number;
+  num_avail_beds: number;
+  num_total_beds: number;
   other_info: string[];
   extracted_events: ExtractedEvent[];
 };

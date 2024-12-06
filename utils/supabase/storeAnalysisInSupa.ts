@@ -14,7 +14,7 @@ export type OtherInfo = {
 };
 
 export const storeAnalysisInSupa = async (extractedData: BedsAndEventsOutput, callUUID: number) => {
-  const { num_beds, extracted_events, other_info } = extractedData;
+  const { num_avail_beds, num_total_beds, extracted_events, other_info } = extractedData;
 
   // Convert other_info array to object if it's coming in as an array
   const other_info_object: OtherInfo = Array.isArray(other_info)
@@ -29,7 +29,8 @@ export const storeAnalysisInSupa = async (extractedData: BedsAndEventsOutput, ca
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      num_beds,
+      num_avail_beds,
+      num_total_beds,
       events: extracted_events,
       other: other_info_object,
       callUUID,

@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 export const SYSTEM_PROMPT = `You are a specialized analyzer focused on extracting key information from conversations between AI agents and community organization representatives. Your goal is to identify and structure information about available resources, events, and services that could help underprivileged individuals.
 Review the provided transcript carefully and extract information into the specified JSON structure, following these guidelines:
-- For num_beds: Count only clearly stated, currently available bed counts
+- For num_avail_beds: Count only clearly stated, currently available bed counts.
+- For num_total_beds: Count all the beds available at the shelter.
 - For events: Pay special attention to timing details, requirements, and any recurring patterns.
 - For start_date_time and end_date_time: The time zone is Pacific time which has a -08:00 timezone offset. For example, this is December 2nd, 2024 at 3PM Pacific Time: 2024-12-02T15:00:00.000-08:00
 - For other_info: Capture any resource information that doesn't fit into events or beds (e.g., food pantry hours, shower facilities, clothing donations)
@@ -74,15 +75,16 @@ export const HUMAN_PREPROMPT = `I am about to provide you with a transcript for 
 export const STRUCTURED_ZOD_FORMAT = z
   .object({
     correctness: z.boolean().describe('Is the submission correct, accurate, and factual?'),
-    num_beds: z
+    num_avail_beds: z
       .number()
-      .describe(
-        'If beds or sleeping arrangements are discussed, document here the number of beds available.'
-      ),
+      .describe('The number of beds available at the time of the call for people to claim.'),
+    num_total_beds: z
+      .number()
+      .describe('The number of total beds at the shelter, both claimed and unclaimed'),
     other_info: z
       .array(z.string())
       .describe(
-        'If any information is discussed that could be useful to a social worker in their efforts to help underprivileged people find resources, that cannot be captured by num_beds or extracted_events, create a string to describe the information and add it to this array.'
+        'If any information is discussed that could be useful to a social worker in their efforts to help underprivileged people find resources, that is not related to beds or events, create a string to describe the information and add it to this array.'
       ),
     extracted_events: z.array(
       z.object({

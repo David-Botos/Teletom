@@ -7,7 +7,8 @@ export type OtherInfo = {
 };
 
 interface StoreAnalysisRequestBody {
-  num_beds: number;
+  num_avail_beds: number;
+  num_total_beds: number;
   events: ExtractedEvent[];
   other: OtherInfo;
   callUUID: number;
@@ -17,9 +18,11 @@ export async function POST(request: Request) {
   console.log('🔵 /api/store-analysis API route called');
 
   try {
-    const { num_beds, events, other, callUUID }: StoreAnalysisRequestBody = await request.json();
+    const { num_avail_beds, num_total_beds, events, other, callUUID }: StoreAnalysisRequestBody =
+      await request.json();
 
-    console.log('📥 Received num_beds:', num_beds);
+    console.log('📥 Received num_avail_beds:', num_avail_beds);
+    console.log('📥 Received callUUID:', num_total_beds);
     console.log('📥 Received events:', events);
     console.log('📥 Received other:', other);
     console.log('📥 Received callUUID:', callUUID);
@@ -41,7 +44,8 @@ export async function POST(request: Request) {
       .insert({
         created_at: new Date().toISOString(),
         extracted_events: events,
-        extracted_num_beds: num_beds,
+        num_avail_beds: num_avail_beds,
+        num_total_beds: num_total_beds,
         additional_data: other, // This will now be a JSON object
       })
       .select('id')

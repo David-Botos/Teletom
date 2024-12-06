@@ -1,11 +1,12 @@
-import { BedsAndEventsOutput } from "./handleAnalysis";
+import { BedsAndEventsOutput } from './handleAnalysis';
 
 export const formatExtractedData = (data: BedsAndEventsOutput): string => {
   return `
   Extraction Results:
   ------------------
   Correctness: ${data.correctness}
-  Number of Beds: ${data.num_beds}
+  Number of Available Beds: ${data.num_avail_beds}
+  Number of Total Beds: ${data.num_total_beds}
   
   Other Information:
   ${data.other_info.map((info) => `• ${info}`).join('\n')}
