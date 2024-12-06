@@ -9,7 +9,7 @@ import {
 export async function POST(request: Request) {
   const { services, config, rtvi_client_version } = await request.json();
 
-  if (!services || !config || !process.env.DAILY_BOTS_URL) {
+  if (!services || !config) {
     return new Response(`Services or config not found on request body`, {
       status: 400,
     });
@@ -20,16 +20,14 @@ export async function POST(request: Request) {
     services: { ...defaultServices, ...services },
     max_duration: defaultMaxDuration,
     // api_keys: {
-    // openai: process.env.OPENAI_API_KEY,
-    // grok: process.env.GROK_API_KEY,
-    // gemini: process.env.GEMINI_API_KEY,
+    // TODO: model specificity
     // },
     recording_settings: recordingSettings,
     config: [...config],
     rtvi_client_version,
   };
 
-  const req = await fetch(process.env.DAILY_BOTS_URL, {
+  const req = await fetch('https://api.daily.co/v1/bots/start', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

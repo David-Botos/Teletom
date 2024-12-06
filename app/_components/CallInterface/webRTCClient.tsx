@@ -11,7 +11,10 @@ import { AppProvider } from './context';
 import Header from './Header';
 import Splash from './Splash';
 import { BOT_READY_TIMEOUT, defaultConfig, defaultServices } from '../../../rtvi.config';
-import { customConnectHandler } from '../../../utils/rtvi/customConnectHandler';
+import {
+  customConnectHandlerDialOut,
+  customConnectHandlerWeb,
+} from '../../../utils/rtvi/customConnectHandler';
 
 export default function WebRTCClient() {
   const [showSplash, setShowSplash] = useState(true);
@@ -26,6 +29,8 @@ export default function WebRTCClient() {
 
     const transportObject: DailyTransport = new DailyTransport();
 
+    const dialout_data: [{ phoneNumber: string }] = [{ phoneNumber: '+16304277199' }];
+
     const voiceClient = new RTVIClient({
       transport: transportObject,
       params: {
@@ -36,7 +41,8 @@ export default function WebRTCClient() {
         },
       },
       timeout: BOT_READY_TIMEOUT,
-      customConnectHandler: (...args) => customConnectHandler(...args, authBundleRef),
+      customConnectHandler: (...args) =>
+        customConnectHandlerDialOut(...args, authBundleRef, dialout_data),
     });
 
     const llmHelper = new LLMHelper({});

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify({ test: true }), { status: 200 });
   }
 
-  if (!callId || !callDomain || !process.env.DAILY_BOTS_URL) {
+  if (!callId || !callDomain ) {
     return new Response(`callId or callDomain not found on request body`, {
       status: 400,
     });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     },
   };
 
-  const req = await fetch(process.env.DAILY_BOTS_URL, {
+  const req = await fetch('https://api.daily.co/v1/bots/start', {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
