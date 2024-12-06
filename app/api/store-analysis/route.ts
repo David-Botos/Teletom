@@ -2,10 +2,14 @@ import { Database } from '@/database.types';
 import { ExtractedEvent } from '@/utils/dataExtraction/handleAnalysis';
 import { createClient } from '@supabase/supabase-js';
 
+export type OtherInfo = {
+  [key: string]: string;
+};
+
 interface StoreAnalysisRequestBody {
   num_beds: number;
-  events: ExtractedEvent;
-  other: string[];
+  events: ExtractedEvent[];
+  other: OtherInfo;
   callUUID: number;
 }
 
@@ -14,6 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const { num_beds, events, other, callUUID }: StoreAnalysisRequestBody = await request.json();
+
     console.log('📥 Received num_beds:', num_beds);
     console.log('📥 Received events:', events);
     console.log('📥 Received other:', other);
@@ -37,7 +42,7 @@ export async function POST(request: Request) {
         created_at: new Date().toISOString(),
         extracted_events: events,
         extracted_num_beds: num_beds,
-        other: other,
+        additional_data: other, // This will now be a JSON object
       })
       .select('id')
       .single();

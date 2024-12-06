@@ -50,6 +50,7 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
   const [startAudioOff, setStartAudioOff] = useState<boolean>(false);
   const mountedRef = useRef<boolean>(false);
   const { clientParams } = useContext(AppContext);
+  const { addEvent } = useCalendar();
 
   useRTVIClientEvent(
     RTVIEvent.Error,
@@ -164,7 +165,7 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       const callUUID = await getCallUUID(authBundleRef.current.room_url);
       storeAnalysisInSupa(extractedData, callUUID);
 
-      const { addEvent } = useCalendar();
+      // Add the events to the calendar's context
       const events: ExtractedEvent[] = extractedData.extracted_events;
       mapAndAddEvents(events, addEvent);
     } catch (error) {

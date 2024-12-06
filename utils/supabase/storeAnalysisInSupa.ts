@@ -8,8 +8,21 @@ export type ExtractedEvent = {
   event_description: string;
 };
 
+// Define a type for the other_info object
+export type OtherInfo = {
+  [key: string]: string;
+};
+
 export const storeAnalysisInSupa = async (extractedData: BedsAndEventsOutput, callUUID: number) => {
   const { num_beds, extracted_events, other_info } = extractedData;
+
+  // Convert other_info array to object if it's coming in as an array
+  const other_info_object: OtherInfo = Array.isArray(other_info)
+    ? other_info.reduce((obj, item) => {
+        const [key, value] = item.split(':').map((s) => s.trim());
+        return { ...obj, [key]: value };
+      }, {})
+    : other_info;
 
   // First store the overall analysis
   const analysisResult = await fetch('/api/store-analysis', {
@@ -18,7 +31,7 @@ export const storeAnalysisInSupa = async (extractedData: BedsAndEventsOutput, ca
     body: JSON.stringify({
       num_beds,
       events: extracted_events,
-      other: other_info,
+      other: other_info_object,
       callUUID,
     }),
   });
