@@ -20,9 +20,15 @@ import {
   handleTranscriptUpload,
   RawTranscription,
 } from '@/utils/supabase/storeTranscriptionInSupa';
-import { BedsAndEventsOutput, handleAnalysis } from '@/utils/dataExtraction/handleAnalysis';
+import {
+  BedsAndEventsOutput,
+  ExtractedEvent,
+  handleAnalysis,
+} from '@/utils/dataExtraction/handleAnalysis';
 import { formatExtractedData } from '@/utils/dataExtraction/formatConsoleLog';
 import { storeAnalysisInSupa } from '@/utils/supabase/storeAnalysisInSupa';
+import { useCalendar } from '@/context/CalendarContext';
+import { mapAndAddEvents } from '@/utils/dataExtraction/mapAndAddEvents';
 
 const status_text = {
   idle: 'Initializing...',
@@ -158,7 +164,9 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       const callUUID = await getCallUUID(authBundleRef.current.room_url);
       storeAnalysisInSupa(extractedData, callUUID);
 
-      // Get the events to display on the calendar
+      const { addEvent } = useCalendar();
+      const events: ExtractedEvent[] = extractedData.extracted_events;
+      mapAndAddEvents(events, addEvent);
     } catch (error) {
       console.error('❌ Error during the recording fetch and transcription process:', error);
       throw error;
