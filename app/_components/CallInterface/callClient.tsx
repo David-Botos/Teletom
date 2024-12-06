@@ -157,7 +157,8 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       // Store the analysis
       const callUUID = await getCallUUID(authBundleRef.current.room_url);
       storeAnalysisInSupa(extractedData, callUUID);
-      // for each event handle its upload to supa
+
+      // Get the events to display on the calendar
     } catch (error) {
       console.error('❌ Error during the recording fetch and transcription process:', error);
       throw error;
