@@ -1,4 +1,4 @@
-TAPN: Teletom
+BearHug ʕ•ᴥ•ʔ
 This repo is a demo that shows off the capabilities of an AI voice agent to extract important information about latent capacity in CBOs in Seattle.  The idea is to evolve this project into a tool that helps badass social workers.
 
 ## Getting Started

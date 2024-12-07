@@ -14,7 +14,7 @@ export default function Home() {
       <div className="flex flex-col h-screen bg-white">
         <div className="flex justify-between bg-slate-400 py-4 px-6" ref={navRef}>
           <div>
-            <p className="text-white font-bold">TAPN Demo</p>
+            <p className="text-white font-bold">ʕ•ᴥ•ʔ</p>
           </div>
           <div>{/* <p className="text-blue-600 font-bold">Start Call</p> */}</div>
         </div>

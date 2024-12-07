@@ -41,8 +41,8 @@ export default function WebRTCClient() {
         },
       },
       timeout: BOT_READY_TIMEOUT,
-      customConnectHandler: (...args) =>
-        customConnectHandlerDialOut(...args, authBundleRef, dialout_data),
+      customConnectHandler: (...args) => customConnectHandlerWeb(...args, authBundleRef),
+      // customConnectHandlerDialOut(...args, authBundleRef, dialout_data),
     });
 
     const llmHelper = new LLMHelper({});
