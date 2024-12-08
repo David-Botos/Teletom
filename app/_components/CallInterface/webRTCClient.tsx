@@ -12,9 +12,10 @@ import Header from './Header';
 import Splash from './Splash';
 import { BOT_READY_TIMEOUT, defaultConfig, defaultServices } from '../../../rtvi.config';
 import {
-  customConnectHandlerDialOut,
+  // customConnectHandlerDialOut,
   customConnectHandlerWeb,
 } from '../../../utils/rtvi/customConnectHandler';
+import { CommunityServices, generateConfig } from '@/utils/conversation/generatePrompt';
 
 export default function WebRTCClient() {
   const [showSplash, setShowSplash] = useState(true);
@@ -29,7 +30,17 @@ export default function WebRTCClient() {
 
     const transportObject: DailyTransport = new DailyTransport();
 
-    const dialout_data: [{ phoneNumber: string }] = [{ phoneNumber: '+16304277199' }];
+    // const dialout_data: [{ phoneNumber: string }] = [{ phoneNumber: '+16304277199' }];
+
+    // Customize the CBO and its services here 
+    const newConfig = generateConfig(defaultConfig, {
+      cbo_name: 'Bethany Presbyterian',
+      arr_services: [
+        CommunityServices.FOOD_RESOURCES,
+        CommunityServices.SHELTER,
+        CommunityServices.MENTAL_HEALTH,
+      ],
+    });
 
     const voiceClient = new RTVIClient({
       transport: transportObject,
@@ -37,7 +48,7 @@ export default function WebRTCClient() {
         baseUrl: '/api',
         requestData: {
           services: defaultServices,
-          config: defaultConfig,
+          config: newConfig,
         },
       },
       timeout: BOT_READY_TIMEOUT,
