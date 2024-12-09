@@ -12,8 +12,8 @@ import Header from './Header';
 import Splash from './Splash';
 import { BOT_READY_TIMEOUT, defaultConfig, defaultServices } from '../../../rtvi.config';
 import {
-  // customConnectHandlerDialOut,
-  customConnectHandlerWeb,
+  customConnectHandlerDialOut,
+  // customConnectHandlerWeb,
 } from '../../../utils/rtvi/customConnectHandler';
 import { CommunityServices, generateConfig } from '@/utils/conversation/generatePrompt';
 
@@ -30,9 +30,7 @@ export default function WebRTCClient() {
 
     const transportObject: DailyTransport = new DailyTransport();
 
-    // const dialout_data: [{ phoneNumber: string }] = [{ phoneNumber: '+16304277199' }];
-
-    // Customize the CBO and its services here 
+    // Customize the CBO and its services here
     const newConfig = generateConfig(defaultConfig, {
       cbo_name: 'Bethany Presbyterian',
       arr_services: [
@@ -41,6 +39,8 @@ export default function WebRTCClient() {
         CommunityServices.MENTAL_HEALTH,
       ],
     });
+
+    console.log('newConfig', newConfig);
 
     const voiceClient = new RTVIClient({
       transport: transportObject,
@@ -52,8 +52,10 @@ export default function WebRTCClient() {
         },
       },
       timeout: BOT_READY_TIMEOUT,
-      customConnectHandler: (...args) => customConnectHandlerWeb(...args, authBundleRef),
-      // customConnectHandlerDialOut(...args, authBundleRef, dialout_data),
+      customConnectHandler: (params, timeout, abortController) =>
+        customConnectHandlerDialOut(params, timeout, abortController, authBundleRef, [
+          { phoneNumber: '+16304277199' },
+        ]),
     });
 
     const llmHelper = new LLMHelper({});

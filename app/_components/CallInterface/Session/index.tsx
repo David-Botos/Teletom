@@ -82,6 +82,10 @@ export const Session = React.memo(
       }, [hasStarted])
     );
 
+    useRTVIClientEvent(
+      RTVIEvent.ParticipantLeft,
+      onLeave
+    );
     // ---- Effects
 
     useEffect(() => {
