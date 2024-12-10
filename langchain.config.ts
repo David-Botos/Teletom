@@ -115,3 +115,333 @@ export const STRUCTURED_ZOD_FORMAT = z
   .describe(
     'Extract the number of beds available and the events discussed in a conversation with a CBO'
   );
+
+export const SHELTER_CALL_SCHEMA = z
+  .object({
+    // Basic metadata
+    correctness: z.boolean().describe('Is the submission correct, accurate, and factual?'),
+    timestamp: z.string().describe('When the call was made in ISO format'),
+    shelter_name: z.string().describe('Name of the shelter or facility'),
+
+    // Capacity information
+    capacity: z.object({
+      num_avail_beds: z.number().nullable().describe('Current number of available beds'),
+      num_total_beds: z.number().nullable().describe('Total bed capacity'),
+      capacity_notes: z
+        .string()
+        .optional()
+        .describe('Any qualifiers about capacity (e.g., "reduced due to construction")'),
+      expected_availability: z
+        .string()
+        .optional()
+        .describe('Information about when beds might become available'),
+    }),
+
+    // Access model
+    access_type: z
+      .enum(['direct_access', 'referral_only', 'hybrid'])
+      .describe('How people can access the shelter'),
+    intake_process: z.object({
+      intake_hours: z.string().optional().describe('When intake is available'),
+      intake_location: z.string().optional().describe('Where to go for intake'),
+      intake_requirements: z
+        .array(z.string())
+        .describe('Required documents or conditions for intake'),
+      referral_sources: z
+        .array(z.string())
+        .describe('Accepted sources for referrals (e.g., "hospital social worker")'),
+      wait_time: z.string().optional().describe('Expected wait time for placement'),
+    }),
+
+    // Population served
+    population_served: z.object({
+      gender_restrictions: z.array(z.string()).describe('Gender requirements if any'),
+      age_restrictions: z.array(z.string()).describe('Age requirements if any'),
+      other_restrictions: z.array(z.string()).describe('Other eligibility requirements'),
+    }),
+
+    // Services offered
+    services: z.object({
+      housing_types: z
+        .array(z.string())
+        .describe('Types of housing offered (e.g., "emergency", "transitional", "permanent")'),
+      support_services: z
+        .array(z.string())
+        .describe('Additional services offered (e.g., "mental health", "substance abuse")'),
+      program_details: z.array(z.string()).describe('Details about specific programs offered'),
+    }),
+
+    // Referral process
+    referral_process: z.object({
+      referral_method: z.enum(['email', 'phone', 'in_person', 'multiple']),
+      referral_contact: z.string().optional().describe('Contact information for referrals'),
+      referral_requirements: z.array(z.string()).describe('Requirements for making referrals'),
+      referral_timeline: z.string().optional().describe('Expected timeline for referral process'),
+    }),
+
+    // Key contacts
+    contacts: z.array(
+      z.object({
+        name: z.string(),
+        role: z.string(),
+        contact_info: z.string(),
+        best_time_to_contact: z.string().optional(),
+      })
+    ),
+
+    // Events (keeping your original structure)
+    extracted_events: z.array(
+      z.object({
+        event_title: z.string(),
+        start_date_time: z.string(),
+        end_date_time: z.string(),
+        isAllDay: z.boolean(),
+        event_description: z.string(),
+      })
+    ),
+
+    // Additional information
+    other_info: z
+      .array(z.string())
+      .describe('Additional useful information not captured in other fields'),
+
+    // Vulnerability criteria
+    vulnerability_criteria: z
+      .array(z.string())
+      .describe('Factors that affect priority for placement'),
+
+    // Alternative referrals
+    alternative_resources: z.array(
+      z.object({
+        organization_name: z.string(),
+        service_type: z.string(),
+        contact_info: z.string().optional(),
+        notes: z.string().optional(),
+      })
+    ),
+  })
+  .describe('Structured data extracted from shelter availability calls');
+
+// First, let's create a JSON schema that matches your Zod schema but in the format Gemini expects
+export const JSON_SHELTER_CALL_SCHEMA = {
+  name: 'shelter_analysis',
+  description: 'Structured data extracted from shelter availability calls',
+  parameters: {
+    type: 'object',
+    properties: {
+      correctness: {
+        type: 'boolean',
+        description: 'Is the submission correct, accurate, and factual?',
+      },
+      timestamp: {
+        type: 'string',
+        description: 'When the call was made in ISO format',
+      },
+      shelter_name: {
+        type: 'string',
+        description: 'Name of the shelter or facility',
+      },
+      capacity: {
+        type: 'object',
+        properties: {
+          num_avail_beds: {
+            type: 'number',
+            description: 'Current number of available beds',
+            nullable: true,
+          },
+          num_total_beds: {
+            type: 'number',
+            description: 'Total bed capacity',
+            nullable: true,
+          },
+          capacity_notes: {
+            type: 'string',
+            description: 'Any qualifiers about capacity',
+          },
+          expected_availability: {
+            type: 'string',
+            description: 'Information about when beds might become available',
+          },
+        },
+      },
+      access_type: {
+        type: 'string',
+        enum: ['direct_access', 'referral_only', 'hybrid'],
+        description: 'How people can access the shelter',
+      },
+      intake_process: {
+        type: 'object',
+        properties: {
+          intake_hours: {
+            type: 'string',
+            description: 'When intake is available',
+          },
+          intake_location: {
+            type: 'string',
+            description: 'Where to go for intake',
+          },
+          intake_requirements: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Required documents or conditions for intake',
+          },
+          referral_sources: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Accepted sources for referrals',
+          },
+          wait_time: {
+            type: 'string',
+            description: 'Expected wait time for placement',
+          },
+        },
+      },
+      population_served: {
+        type: 'object',
+        properties: {
+          gender_restrictions: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Gender requirements if any',
+          },
+          age_restrictions: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Age requirements if any',
+          },
+          other_restrictions: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Other eligibility requirements',
+          },
+        },
+      },
+      services: {
+        type: 'object',
+        properties: {
+          housing_types: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          support_services: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          program_details: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+        },
+      },
+      referral_process: {
+        type: 'object',
+        properties: {
+          referral_method: {
+            type: 'string',
+            enum: ['email', 'phone', 'in_person', 'multiple'],
+          },
+          referral_contact: {
+            type: 'string',
+          },
+          referral_requirements: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          referral_timeline: {
+            type: 'string',
+          },
+        },
+      },
+      contacts: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            role: { type: 'string' },
+            contact_info: { type: 'string' },
+            best_time_to_contact: { type: 'string' },
+          },
+          required: ['name', 'role', 'contact_info'],
+        },
+      },
+      extracted_events: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            event_title: { type: 'string' },
+            start_date_time: { type: 'string' },
+            end_date_time: { type: 'string' },
+            isAllDay: { type: 'boolean' },
+            event_description: { type: 'string' },
+          },
+          required: [
+            'event_title',
+            'start_date_time',
+            'end_date_time',
+            'isAllDay',
+            'event_description',
+          ],
+        },
+      },
+      other_info: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+      vulnerability_criteria: {
+        type: 'array',
+        items: { type: 'string' },
+      },
+      alternative_resources: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            organization_name: { type: 'string' },
+            service_type: { type: 'string' },
+            contact_info: { type: 'string' },
+            notes: { type: 'string' },
+          },
+          required: ['organization_name', 'service_type'],
+        },
+      },
+    },
+    required: ['correctness', 'timestamp', 'shelter_name', 'access_type'],
+  },
+};
+
+export const SHELTER_ANALYSIS_PROMPT_v2 = `You are a data extraction specialist analyzing a conversation transcript between a shelter representative and someone inquiring about shelter availability. Your task is to extract specific information and structure it according to a predefined schema.
+
+Follow these steps:
+
+1. First, carefully read the entire transcript.
+
+2. For each piece of information you identify, categorize it according to these key areas:
+   - Basic shelter information (name, contact details)
+   - Current capacity and bed availability
+   - Intake process and requirements
+   - Population served and restrictions
+   - Services offered
+   - Referral process details
+   - Key contacts mentioned
+   - Events or programs discussed
+   - Alternative resources mentioned
+   - Any vulnerability criteria discussed
+
+3. For each field:
+   - Only include information explicitly stated in the transcript
+   - Mark fields as null if information is not provided
+   - Include relevant context or qualifiers in notes fields
+   - Maintain exact numbers, dates, and times as stated
+   - Capture any uncertainty or variability mentioned (e.g., "approximately 40 beds")
+
+Important guidelines:
+- Do not infer or assume information not explicitly stated
+- Capture qualifiers and conditions exactly as described
+- Include relevant context in appropriate notes fields
+- Maintain temporal information (dates, times, durations) precisely
+- Flag any ambiguous or uncertain information
+- Record all mentioned alternative resources or referral options
+
+Please process the following transcript and provide the structured data in the specified JSON format:`;
