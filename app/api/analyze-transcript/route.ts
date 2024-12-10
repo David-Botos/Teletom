@@ -1,4 +1,11 @@
-import { HUMAN_PREPROMPT, STRUCTURED_ZOD_FORMAT, SYSTEM_PROMPT } from '@/langchain.config';
+import {
+  JSON_SHELTER_CALL_SCHEMA,
+  // HUMAN_PREPROMPT,
+  SHELTER_ANALYSIS_PROMPT_v2,
+  // SHELTER_CALL_SCHEMA,
+  // STRUCTURED_ZOD_FORMAT,
+  // SYSTEM_PROMPT,
+} from '@/langchain.config';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { NextRequest } from 'next/server';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
@@ -13,8 +20,6 @@ export async function POST(request: NextRequest) {
       throw new Error('LangChain / Google API key not configured');
     }
 
-    // const openai_key = process.env.OPENAI_API_KEY;
-
     // Get URL and parameters from request
     const { transcript } = await request.json();
     if (!transcript) {
@@ -28,34 +33,19 @@ export async function POST(request: NextRequest) {
       apiKey: google_key,
     });
 
-    // const llm = new ChatOpenAI({
-    //   model: 'gpt-3.5-turbo',
-    //   temperature: 0,
-    //   openAIApiKey: openai_key,
-    // });
-
-    const structuredLLM = llm.withStructuredOutput(STRUCTURED_ZOD_FORMAT, {
+    const shelterStructuredLLM = llm.withStructuredOutput(JSON_SHELTER_CALL_SCHEMA, {
       method: 'json_mode',
-      name: 'extract-beds-events',
+      name: 'shelter-data-extraction',
     });
 
-    const generateHumanMessage = (transcript: string) => HUMAN_PREPROMPT + transcript;
-
     const prompt = ChatPromptTemplate.fromMessages([
-      ['system', SYSTEM_PROMPT],
-      ['human', generateHumanMessage(transcript)],
+      ['system', SHELTER_ANALYSIS_PROMPT_v2],
+      ['human', transcript],
     ]);
 
-    const chain = prompt.pipe(structuredLLM);
+    const chain = prompt.pipe(shelterStructuredLLM);
 
     const extractedInformation = await chain.invoke({ transcript: transcript });
-
-    // const outputParser = StructuredOutputParser.fromZodSchema(STRUCTURED_ZOD_FORMAT);
-
-    // const extractedInformation = await chain.invoke({
-    //   transcript: transcript,
-    //   format_instructions: outputParser.getFormatInstructions(),
-    // });
 
     // Return successful response
     return new Response(JSON.stringify(extractedInformation), {

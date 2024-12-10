@@ -43,30 +43,31 @@ export const storeAnalysisInSupa = async (extractedData: BedsAndEventsOutput, ca
   console.log(`✅ Call analysis stored in supabase`);
 
   // Then store each event individually
-  const eventPromises = extracted_events.map(async (event) => {
-    const eventDetails = {
-      event_title: event.event_title,
-      event_start: event.start_date_time,
-      event_end: event.end_date_time,
-      event_desc: event.event_description,
-      isAllDay: event.isAllDay,
-      isRecurring: false,
-      fk_call: callUUID,
-    };
+  if (extracted_events.length >= 1) {
+    const eventPromises = extracted_events.map(async (event) => {
+      const eventDetails = {
+        event_title: event.event_title,
+        event_start: event.start_date_time,
+        event_end: event.end_date_time,
+        event_desc: event.event_description,
+        isAllDay: event.isAllDay,
+        isRecurring: false,
+        fk_call: callUUID,
+      };
 
-    const eventResult = await fetch('/api/store-events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(eventDetails),
+      const eventResult = await fetch('/api/store-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventDetails),
+      });
+
+      if (!eventResult.ok) {
+        throw new Error(`Failed to store event: ${event.event_title}`);
+      }
+      console.log(`✅ ${event.event_title} stored in supabase`);
+      return eventResult;
     });
-
-    if (!eventResult.ok) {
-      throw new Error(`Failed to store event: ${event.event_title}`);
-    }
-    console.log(`✅ ${event.event_title} stored in supabase`);
-    return eventResult;
-  });
-
-  // Wait for all event storage operations to complete
-  await Promise.all(eventPromises);
+    // Wait for all event storage operations to complete
+    await Promise.all(eventPromises);
+  }
 };

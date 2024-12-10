@@ -24,14 +24,16 @@ import {
   RawTranscription,
 } from '@/utils/supabase/storeTranscriptionInSupa';
 import {
-  BedsAndEventsOutput,
+  // BedsAndEventsOutput,
   ExtractedEvent,
   handleAnalysis,
+  ShelterAnalysisOutput,
 } from '@/utils/dataExtraction/handleAnalysis';
-import { formatExtractedData } from '@/utils/dataExtraction/formatConsoleLog';
-import { storeAnalysisInSupa } from '@/utils/supabase/storeAnalysisInSupa';
+// import { formatExtractedData } from '@/utils/dataExtraction/formatConsoleLog';
+// import { storeAnalysisInSupa } from '@/utils/supabase/storeAnalysisInSupa';
 import { useCalendar } from '@/context/CalendarContext';
 import { mapAndAddEvents } from '@/utils/dataExtraction/mapAndAddEvents';
+import { storeShelterAnalysisInSupa } from '@/utils/supabase/storeShelterAnalysisInSupa';
 
 const status_text = {
   idle: 'Initializing...',
@@ -173,12 +175,13 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
       const truncFullTranscript = fullTranscript.results.channels[0].alternatives[0].transcript;
       console.log('📝 TruncCBOTranscript: ', truncFullTranscript);
       // const truncBotTranscript = botTranscription.results.channels[0].alternatives[0].transcript;
-      const extractedData: BedsAndEventsOutput = await handleAnalysis(truncFullTranscript);
-      console.log(formatExtractedData(extractedData));
+      const extractedData: ShelterAnalysisOutput = await handleAnalysis(truncFullTranscript);
+      console.log(extractedData);
 
       // Store the analysis
       const callUUID = await getCallUUID(authBundleRef.current.room_url);
-      storeAnalysisInSupa(extractedData, callUUID);
+      // storeAnalysisInSupa(extractedData, callUUID);
+      storeShelterAnalysisInSupa(extractedData, callUUID);
 
       // Add the events to the calendar's context
       const events: ExtractedEvent[] = extractedData.extracted_events;
