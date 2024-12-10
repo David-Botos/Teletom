@@ -142,6 +142,63 @@ export type Database = {
           },
         ]
       }
+      shelter_analysis: {
+        Row: {
+          access_type: string
+          alternative_resources: Json
+          capacity: Json
+          contacts: Json
+          correctness: boolean
+          created_at: string | null
+          extracted_events: Json
+          id: string
+          intake_process: Json
+          other_info: Json
+          population_served: Json
+          referral_process: Json
+          services: Json
+          shelter_name: string
+          timestamp: string
+          vulnerability_criteria: Json
+        }
+        Insert: {
+          access_type: string
+          alternative_resources: Json
+          capacity: Json
+          contacts: Json
+          correctness: boolean
+          created_at?: string | null
+          extracted_events: Json
+          id?: string
+          intake_process: Json
+          other_info: Json
+          population_served: Json
+          referral_process: Json
+          services: Json
+          shelter_name: string
+          timestamp: string
+          vulnerability_criteria: Json
+        }
+        Update: {
+          access_type?: string
+          alternative_resources?: Json
+          capacity?: Json
+          contacts?: Json
+          correctness?: boolean
+          created_at?: string | null
+          extracted_events?: Json
+          id?: string
+          intake_process?: Json
+          other_info?: Json
+          population_served?: Json
+          referral_process?: Json
+          services?: Json
+          shelter_name?: string
+          timestamp?: string
+          vulnerability_criteria?: Json
+        }
+        Relationships: []
+      }
       transcriptions: {
         Row: {
           call_type: string | null
@@ -174,7 +231,52 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      gtrgm_compress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: {
+          "": unknown
+        }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      set_limit: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: {
+          "": string
+        }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never
