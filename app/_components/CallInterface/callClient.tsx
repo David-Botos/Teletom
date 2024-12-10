@@ -11,7 +11,10 @@ import { Configure } from './Setup';
 import { Alert } from './ui/alert';
 import { Button } from './ui/button';
 import * as Card from './ui/card';
-import { attemptFetchRecordings } from '@/utils/s3/fetchRecording';
+import {
+  attemptFetchFullRecording,
+  // attemptFetchRecordings
+} from '@/utils/s3/fetchRecording';
 import { DailyTransportAuthBundle } from '@daily-co/realtime-ai-daily';
 import { constructS3Directory } from '@/utils/supabase/constructS3Directory';
 import { transcribeURL } from '@/utils/deepgram/transcribeRecording';
@@ -134,31 +137,43 @@ export default function CallUI({ authBundleRef }: CallUIProps) {
 
       // Fetch recordings with polling mechanism
       console.log('🔄 Starting recording fetch attempts...');
-      const [cboRecording, botRecording] = await attemptFetchRecordings(s3_prefix);
+      // const [cboRecording, botRecording] = await attemptFetchRecordings(s3_prefix);
+      const callRecording = await attemptFetchFullRecording(s3_prefix);
 
-      if (!cboRecording || !botRecording) {
-        throw new Error('Failed to fetch one or both recordings');
+      // if (!cboRecording || !botRecording) {
+      //   throw new Error('Failed to fetch one or both recordings');
+      // }
+      if (!callRecording) {
+        throw new Error('❌ Failed to fetch recording');
       }
 
       // Transcribe recordings with presigned s3 urls
-      console.log('🛜 Starting transcription on CBO recording presigned url...');
-      const cboTranscription: RawTranscription = await transcribeURL(cboRecording);
-      console.log('📝 cboTranscription returned with the value: ', cboTranscription);
-      console.log('🛜 Starting transcription on bot recording presigned url...');
-      const botTranscription: RawTranscription = await transcribeURL(botRecording);
-      console.log('📝 botTranscription returned with the value: ', botTranscription);
+
+      // This is for raw-track processing
+      // console.log('🛜 Starting transcription on CBO recording presigned url...');
+      // const cboTranscription: RawTranscription = await transcribeURL(cboRecording);
+      // console.log('📝 cboTranscription returned with the value: ', cboTranscription);
+      // console.log('🛜 Starting transcription on bot recording presigned url...');
+      // const botTranscription: RawTranscription = await transcribeURL(botRecording);
+      // console.log('📝 botTranscription returned with the value: ', botTranscription);
+      console.log('🛜 Starting transcription on full call recording presigned url...');
+      const fullTranscript: RawTranscription = await transcribeURL(callRecording);
+      console.log('📝 fullTranscript returned with the value: ', fullTranscript);
 
       // Store the transcripts
-      console.log('🔵 Calling handleTranscriptUpload on cbo transcript...');
-      handleTranscriptUpload(cboTranscription, authBundleRef.current.room_url, false);
-      console.log('🔵 Calling handleTranscriptUpload on bot transcript...');
-      handleTranscriptUpload(botTranscription, authBundleRef.current.room_url, true);
+      // console.log('🔵 Calling handleTranscriptUpload on cbo transcript...');
+      // handleTranscriptUpload(cboTranscription, authBundleRef.current.room_url, 'cbo');
+      // console.log('🔵 Calling handleTranscriptUpload on bot transcript...');
+      // handleTranscriptUpload(botTranscription, authBundleRef.current.room_url, 'bot');
+      console.log('🔵 Calling handleTranscriptUpload on full transcript...');
+      handleTranscriptUpload(fullTranscript, authBundleRef.current.room_url, 'full');
 
       // Analyze the recording
-      const truncCBOTranscript = cboTranscription.results.channels[0].alternatives[0].transcript;
-      console.log('📝 TruncCBOTranscript: ', truncCBOTranscript);
+      // const truncCBOTranscript = cboTranscription.results.channels[0].alternatives[0].transcript;
+      const truncFullTranscript = fullTranscript.results.channels[0].alternatives[0].transcript;
+      console.log('📝 TruncCBOTranscript: ', truncFullTranscript);
       // const truncBotTranscript = botTranscription.results.channels[0].alternatives[0].transcript;
-      const extractedData: BedsAndEventsOutput = await handleAnalysis(truncCBOTranscript);
+      const extractedData: BedsAndEventsOutput = await handleAnalysis(truncFullTranscript);
       console.log(formatExtractedData(extractedData));
 
       // Store the analysis

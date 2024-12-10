@@ -1,19 +1,20 @@
 import { Database } from '@/database.types';
+import { UploadType } from '@/utils/supabase/storeTranscriptionInSupa';
 import { createClient } from '@supabase/supabase-js';
 
 interface UpdateTableWithUUIDReqBody {
   id: number;
   transcriptUUID: number;
-  isBot: boolean;
+  uploadType: UploadType;
 }
 
 export async function POST(request: Request) {
   try {
     // Get the request body
-    const { id, transcriptUUID, isBot }: UpdateTableWithUUIDReqBody = await request.json();
+    const { id, transcriptUUID, uploadType }: UpdateTableWithUUIDReqBody = await request.json();
     console.log('📥 Received id:', id);
     console.log('📥 Received fk_transcriptions:', transcriptUUID);
-    console.log('📥 Received isBot:', isBot);
+    console.log('📥 Received uploadType:', uploadType);
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -32,7 +33,11 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from('calls')
       .update({
-        [isBot ? 'fk_transcription_bot' : 'fk_transcription_cbo']: transcriptUUID,
+        [uploadType === 'bot'
+          ? 'fk_transcription_bot'
+          : uploadType === 'cbo'
+          ? 'fk_transcription_cbo'
+          : 'fk_transcription_full']: transcriptUUID,
       })
       .eq('id', id)
       .select();

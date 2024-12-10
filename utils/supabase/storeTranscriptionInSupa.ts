@@ -56,6 +56,8 @@ export interface TranscriptionRequest {
   }>;
 }
 
+export type UploadType = 'bot' | 'cbo' | 'full';
+
 export const prepareTranscriptionData = (
   rawTranscription: RawTranscription
 ): TranscriptionRequest => {
@@ -68,7 +70,7 @@ export const prepareTranscriptionData = (
 
 const storeTranscription = async (
   rawTranscription: RawTranscription,
-  isBot: boolean
+  uploadType: UploadType
 ): Promise<number> => {
   console.log('🔵 storeTranscription helper function called');
 
@@ -83,7 +85,7 @@ const storeTranscription = async (
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ transcript_data, isBot }),
+      body: JSON.stringify({ transcript_data, uploadType }),
     });
 
     // handle error res
@@ -127,7 +129,7 @@ export const getCallUUID = async (room_url: string): Promise<number> => {
   }
 };
 
-const updateCalls = async (transcriptUUID: number, callUUID: number, isBot: boolean) => {
+const updateCalls = async (transcriptUUID: number, callUUID: number, uploadType: UploadType) => {
   try {
     console.log('🚀 Sending GET request to /api/update-with-transcript');
     const res = await fetch('/api/update-with-transcript', {
@@ -135,7 +137,11 @@ const updateCalls = async (transcriptUUID: number, callUUID: number, isBot: bool
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: callUUID, transcriptUUID: transcriptUUID, isBot: isBot }),
+      body: JSON.stringify({
+        id: callUUID,
+        transcriptUUID: transcriptUUID,
+        uploadType: uploadType,
+      }),
     });
     return res;
   } catch (error) {
@@ -147,18 +153,16 @@ const updateCalls = async (transcriptUUID: number, callUUID: number, isBot: bool
 export const handleTranscriptUpload = async (
   rawTranscription: RawTranscription,
   room_url: string,
-  isBot: boolean
+  uploadType: UploadType
 ) => {
-  const transcriptUUID = await storeTranscription(rawTranscription, isBot);
-  console.log(`✅ ${isBot ? 'Bot' : 'CBO'} transcript is stored with uuid: `, transcriptUUID);
+  const transcriptUUID = await storeTranscription(rawTranscription, uploadType);
+  console.log(`✅ ${uploadType} transcript is stored with uuid: `, transcriptUUID);
   const callUUID = await getCallUUID(room_url);
   console.log('✅ Fetched call uuid: ', callUUID);
-  const updateRes = await updateCalls(transcriptUUID, callUUID, isBot);
+  const updateRes = await updateCalls(transcriptUUID, callUUID, uploadType);
   console.log(
     updateRes.ok
-      ? `🏁 ${isBot ? 'Bot' : 'CBO'} transcript uploaded and linked to calls table`
-      : `❌ Error occurred when uploading the ${
-          isBot ? 'Bot' : 'CBO'
-        } transcript id to the calls table`
+      ? `🏁 ${uploadType} transcript uploaded and linked to calls table`
+      : `❌ Error occurred when uploading the ${uploadType} transcript id to the calls table`
   );
 };

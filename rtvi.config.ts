@@ -35,7 +35,7 @@ export const LANGUAGES = [
 ];
 
 export const recordingSettings = {
-  type: 'raw-tracks',
+  type: 'cloud',
   recordings_bucket: {
     assume_role_arn: process.env.AWS_ROLE,
     bucket_name: process.env.S3_BUCKET,

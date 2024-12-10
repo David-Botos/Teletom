@@ -1,15 +1,15 @@
 import { Database } from '@/database.types';
-import { TranscriptionRequest } from '@/utils/supabase/storeTranscriptionInSupa';
+import { TranscriptionRequest, UploadType } from '@/utils/supabase/storeTranscriptionInSupa';
 import { createClient } from '@supabase/supabase-js';
 
 interface UploadTranscriptReqBody {
   transcript_data: TranscriptionRequest;
-  isBot: boolean;
+  uploadType: UploadType;
 }
 
 export async function POST(request: Request) {
   try {
-    const { transcript_data, isBot }: UploadTranscriptReqBody = await request.json();
+    const { transcript_data, uploadType }: UploadTranscriptReqBody = await request.json();
     console.log('📥 Received transcript_data:', transcript_data);
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       duration: transcript_data.duration,
       full_transcript: transcript_data.full_transcript,
       individual_words: transcript_data.individual_words,
-      isBot: isBot,
+      call_type: uploadType,
       created_at: new Date().toISOString(),
     };
 

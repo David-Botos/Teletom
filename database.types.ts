@@ -42,6 +42,7 @@ export type Database = {
           fk_analysis: number | null
           fk_transcription_bot: number | null
           fk_transcription_cbo: number | null
+          fk_transcription_full: number | null
           id: number
           room_url: string | null
           s3_folder_dir: string | null
@@ -51,6 +52,7 @@ export type Database = {
           fk_analysis?: number | null
           fk_transcription_bot?: number | null
           fk_transcription_cbo?: number | null
+          fk_transcription_full?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
@@ -60,6 +62,7 @@ export type Database = {
           fk_analysis?: number | null
           fk_transcription_bot?: number | null
           fk_transcription_cbo?: number | null
+          fk_transcription_full?: number | null
           id?: number
           room_url?: string | null
           s3_folder_dir?: string | null
@@ -82,6 +85,13 @@ export type Database = {
           {
             foreignKeyName: "calls_fk_transcription_cbo_fkey"
             columns: ["fk_transcription_cbo"]
+            isOneToOne: false
+            referencedRelation: "transcriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calls_fk_transcription_full_fkey"
+            columns: ["fk_transcription_full"]
             isOneToOne: false
             referencedRelation: "transcriptions"
             referencedColumns: ["id"]
@@ -134,28 +144,28 @@ export type Database = {
       }
       transcriptions: {
         Row: {
+          call_type: string | null
           created_at: string
           duration: number | null
           full_transcript: string | null
           id: number
           individual_words: Json | null
-          isBot: boolean | null
         }
         Insert: {
+          call_type?: string | null
           created_at?: string
           duration?: number | null
           full_transcript?: string | null
           id?: number
           individual_words?: Json | null
-          isBot?: boolean | null
         }
         Update: {
+          call_type?: string | null
           created_at?: string
           duration?: number | null
           full_transcript?: string | null
           id?: number
           individual_words?: Json | null
-          isBot?: boolean | null
         }
         Relationships: []
       }
