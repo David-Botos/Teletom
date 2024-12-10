@@ -32,12 +32,9 @@ export default function WebRTCClient() {
 
     // Customize the CBO and its services here
     const newConfig = generateConfig(defaultConfig, {
-      cbo_name: 'Bethany Presbyterian',
-      arr_services: [
-        CommunityServices.FOOD_RESOURCES,
-        CommunityServices.SHELTER,
-        CommunityServices.MENTAL_HEALTH,
-      ],
+      cbo_name: 'Bread of Life Shelter',
+      church_name: 'Bethany Presbyterian',
+      arr_services: [CommunityServices.SHELTER],
     });
 
     console.log('newConfig', newConfig);
