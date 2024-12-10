@@ -32,28 +32,6 @@ export const LANGUAGES = [
     stt_model: 'nova-2-general',
     default_voice: 'b9de4a89-2257-424b-94c2-db18ba68c81a',
   },
-
-  /* Not yet supported by Cartesia {
-    label: "Portuguese",
-    value: "pt",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "700d1ee3-a641-4018-ba6e-899dcadc9e2b",
-  },
-  {
-    label: "Chinese",
-    value: "zh",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "e90c6678-f0d3-4767-9883-5d0ecf5894a8",
-  },
-  {
-    label: "Japanese",
-    value: "ja",
-    tts_model: "sonic-multilingual",
-    stt_model: "nova-2-general",
-    default_voice: "2b568345-1d48-4047-b25f-7baccf842eb0",
-  },*/
 ];
 
 export const recordingSettings = {
@@ -66,6 +44,9 @@ export const recordingSettings = {
     allow_streaming_from_bucket: true,
   },
 };
+
+// ElevenLabs Configuration:
+// Voices: Charlie, Chris, Eric, Laura, Matilda
 
 export const defaultServices = {
   llm: 'together',
