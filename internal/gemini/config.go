@@ -6,16 +6,6 @@ import (
 	"strconv"
 )
 
-// Config holds all configuration for the Gemini client
-type Config struct {
-	APIKey           string
-	WebSocketURL     string
-	InputSampleRate  int
-	OutputSampleRate int
-	AudioBuffer      int
-	Model            string
-	Generation       GenerationConfig
-}
 
 // DefaultConfig returns a configuration with sensible defaults
 func DefaultConfig() *Config {

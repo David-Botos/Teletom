@@ -7,22 +7,10 @@ import (
     "errors"
     "fmt"
     "log"
-    "sync"
     "time"
 
     "github.com/gorilla/websocket"
 )
-
-// Client manages the WebSocket connection to Gemini
-type Client struct {
-    config     *Config
-    conn       *websocket.Conn
-    sendMu     sync.Mutex
-    ctx        context.Context
-    cancel     context.CancelFunc
-    audioQueue chan *AudioChunk
-	responsesChan chan *ServerResponse
-}
 
 // NewClient creates a new Gemini client with the provided configuration
 func NewClient(config *Config) (*Client, error) {

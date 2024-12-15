@@ -4,43 +4,28 @@ package gemini
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"sync"
 	"time"
-    "fmt"
 )
 
-// Session represents a single conversation session with Gemini
-type Session struct {
-	ID            string
-	client        GeminiClient
-	audioProc     *AudioProcessor
-	audioBuffer   *AudioBuffer
-	context       context.Context
-	cancel        context.CancelFunc
-	responsesChan chan *ServerResponse
-	errorsChan    chan error
-	mu            sync.RWMutex
-	turns         []Turn
-	isActive      bool
-}
-
-// SessionOption allows for optional session configuration
-type SessionOption func(*Session)
-
 // NewSession creates a new conversation session
-func NewSession(client GeminiClient, options ...SessionOption) (*Session, error) {
+func NewSession(client GeminiClient, config *Config, options ...SessionOption) (*Session, error) {
 	if client == nil {
 		return nil, errors.New("client cannot be nil")
+	}
+
+	if config == nil {
+		config = DefaultConfig()
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	session := &Session{
 		ID:            generateSessionID(),
 		client:        client,
-		audioProc:     NewAudioProcessor(DefaultConfig().InputSampleRate, DefaultConfig().OutputSampleRate),
-		audioBuffer:   NewAudioBuffer(DefaultConfig().AudioBuffer),
+		audioProc:     NewAudioProcessor(config),
 		context:       ctx,
 		cancel:        cancel,
 		responsesChan: make(chan *ServerResponse, 10),
@@ -53,40 +38,44 @@ func NewSession(client GeminiClient, options ...SessionOption) (*Session, error)
 	}
 
 	go session.processResponses()
+	go session.handleAudioPipeline()
 
 	return session, nil
 }
 
-// ProcessAudio handles incoming audio data
-func (s *Session) ProcessAudio(data []byte) error {
-    s.mu.RLock()
-    if !s.isActive {
-        s.mu.RUnlock()
-        return errors.New("session is not active")
-    }
-    s.mu.RUnlock()
+// HandleIncomingAudio is the public API for submitting raw audio data for processing
+func (s *Session) HandleIncomingAudio(rawAudio []byte) error {
+	s.mu.RLock()
+	isActive := s.isActive
+	s.mu.RUnlock()
 
-    // Write to buffer and get chunks
-    chunks, err := s.audioBuffer.Write(data)
-    if err != nil {
-        return fmt.Errorf("buffer write error: %w", err)
-    }
+	if !isActive {
+		return errors.New("session is not active")
+	}
 
-    // Process each chunk, but return on first error
-    for _, chunk := range chunks {
-        // Process the audio chunk
-        processedChunk, err := s.audioProc.ProcessAudioChunk(chunk)
-        if err != nil {
-            return fmt.Errorf("chunk processing error: %w", err)
-        }
+	processedChunk, err := s.audioProc.ProcessAudioChunk(rawAudio)
+	if err != nil {
+		return fmt.Errorf("audio processing error: %w", err)
+	}
 
-        // Send to client
-        if err := s.client.ProcessAudio(processedChunk.Data); err != nil {
-            return fmt.Errorf("client processing error: %w", err)
-        }
-    }
+	return s.client.ProcessAudio(processedChunk.Data)
+}
 
-    return nil
+// handleAudioPipeline is the internal goroutine that manages the continuous
+// flow of audio data through the processing pipeline
+func (s *Session) handleAudioPipeline() {
+	for {
+		select {
+		case <-s.context.Done():
+			return
+		case err := <-s.audioProc.GetErrorChan():
+			s.errorsChan <- fmt.Errorf("audio pipeline error: %w", err)
+		case chunk := <-s.audioProc.GetProcessedChan():
+			if err := s.client.ProcessAudio(chunk.Data); err != nil {
+				s.errorsChan <- fmt.Errorf("audio transmission error: %w", err)
+			}
+		}
+	}
 }
 
 // AddContextMessage adds a message to the conversation context
