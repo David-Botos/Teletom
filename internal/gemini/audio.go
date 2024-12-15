@@ -59,7 +59,9 @@ func (ap *AudioProcessor) ProcessAudioChunk(data []byte) (*AudioChunk, error) {
 }
 
 // resample performs simple linear interpolation resampling
-// Note: For production, consider using a more sophisticated resampling algorithm
+// TODO: For production, consider using a more sophisticated resampling algorithm
+// TODO: Options include a higher quality resampling algorithm like Sinc interpolation or the Lanczos algorithm
+// TODO: Or better yet, use an established audio processing library like github.com/hajimehoshi/go-mp3 or github.com/gordonklaus/portaudio
 func (ap *AudioProcessor) resample(samples []int16) []int16 {
     ratio := float64(ap.outputSampleRate) / float64(ap.inputSampleRate)
     outputLength := int(float64(len(samples)) * ratio)
