@@ -40,7 +40,7 @@ func setupStaticFileServer(isDev bool) http.Handler {
             http.NotFound(w, r)
             return
         }
-        // Production mode: only serve from web/static
+        // TODO: Production mode: only serve from web/static
         http.FileServer(http.Dir("web/static")).ServeHTTP(w, r)
     })
 }
