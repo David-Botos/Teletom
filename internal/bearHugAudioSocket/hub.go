@@ -29,8 +29,24 @@ func NewClient(hub *Hub, conn WSConn) *Client {
 // This prevents panic conditions from multiple close attempts on the Send channel.
 func (c *Client) SafeClose() {
     c.closed.Do(func() {
+        // First close the Gemini session if it exists
+        if c.GeminiSession != nil {
+            if err := c.GeminiSession.Close(); err != nil {
+                log.Printf("Error closing Gemini session for client %s: %v", 
+                    c.Conn.RemoteAddr().String(), err)
+            }
+        }
+
+        // Then close the WebSocket connection
+        if err := c.Conn.Close(); err != nil {
+            log.Printf("Error closing WebSocket connection for client %s: %v", 
+                c.Conn.RemoteAddr().String(), err)
+        }
+
+        // Finally close the send channel
         if c.Send != nil {
-            log.Printf("Safely closing client send channel for %s", c.Conn.RemoteAddr().String())
+            log.Printf("Safely closing client send channel for %s", 
+                c.Conn.RemoteAddr().String())
             close(c.Send)
         }
     })
