@@ -9,6 +9,7 @@ import (
     "path/filepath"
     
     "github.com/joho/godotenv"
+    "github.com/David-Botos/BearHug/internal/gemini"
 )
 
 func init() {
@@ -111,6 +112,13 @@ func main() {
     // Root handler for serving the index template
     mux.HandleFunc("/", handleIndex)
     
+    // Initialize WebSocket hub
+    hub := gemini.NewHub()
+    go hub.Run()
+
+    // Add WebSocket handler to your mux
+    mux.HandleFunc("/ws", hub.HandleWebSocket)
+
     // Start server
     log.Printf("Starting server on port %s (Development mode: %v)", port, isDev)
     if err := http.ListenAndServe(":"+port, mux); err != nil {
