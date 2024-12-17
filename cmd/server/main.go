@@ -9,9 +9,6 @@ import (
     "path/filepath"
     
     "github.com/joho/godotenv"
-    "github.com/David-Botos/BearHug/internal/handlers"
-    "github.com/David-Botos/BearHug/internal/bearHugAudioSocket"
-    "github.com/David-Botos/BearHug/internal/gemini"
 )
 
 func init() {
@@ -113,22 +110,6 @@ func main() {
     
     // Root handler for serving the index template
     mux.HandleFunc("/", handleIndex)
-    
-    // Initialize WebSocket hub
-    hub := bearHugAudioSocket.NewHub()
-    go hub.Run()
-    
-    // Initialize Gemini configuration
-    geminiConfig := gemini.LoadConfigFromEnv()
-    
-    // Create audio handler with both hub and Gemini
-    audioHandler, err := handlers.NewAudioHandler(hub, geminiConfig)
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    // Setup WebSocket endpoint
-    mux.HandleFunc("/ws", audioHandler.HandleWebSocket)
     
     // Start server
     log.Printf("Starting server on port %s (Development mode: %v)", port, isDev)

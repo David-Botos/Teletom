@@ -1,5 +1,3 @@
-// TODO: write tests to check gemini integration
-// TODO: make tests pass
 // cmd/server/main_test.go
 package main
 
