@@ -34,7 +34,7 @@ def configure_logging():
 
 # Constants
 MAX_BOTS_PER_ROOM = 1
-DEFAULT_HOST = os.getenv("HOST", "0.0.0.0")
+DEFAULT_HOST = os.getenv("HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.getenv("FAST_API_PORT", "7860"))
 DAILY_API_URL = os.getenv("DAILY_API_URL", "https://api.daily.co/v1")
 
