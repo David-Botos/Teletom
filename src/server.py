@@ -17,21 +17,14 @@ import sys
 from pipecat.transports.services.helpers.daily_rest import DailyRESTHelper, DailyRoomParams, DailyRoomProperties, DailyRoomSipParams, DailyRoomObject
 
 def configure_logging():
-    """Configure logging with a single handler if none exists"""
-    LOGGER_ID = "server_logger"
-    
-    # Remove existing handler with our ID if it exists
-    for handler in logger._core.handlers:
-        if getattr(handler, "name", None) == LOGGER_ID:
-            logger.remove(handler.id)
-            
-    # Add our handler
-    logger.add(
-        sys.stderr,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | {message}",
-        level="DEBUG",
-    )
+    if not logger._core.handlers:  # Only add if no handlers exist
+        logger.add(
+            sys.stderr,
+            format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | {message}",
+            level="DEBUG",
+        )
 
+    
 # Constants
 MAX_BOTS_PER_ROOM = 1
 DEFAULT_HOST = os.getenv("HOST", "127.0.0.1")
