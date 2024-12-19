@@ -39,18 +39,6 @@ DEFAULT_PORT = int(os.getenv("FAST_API_PORT", "7860"))
 DAILY_API_URL = os.getenv("DAILY_API_URL", "https://api.daily.co/v1")
 TOKEN_EXPIRY_TIME = 60 * 60  # 1 hour in seconds
 
-# Dial-in Configuration
-params = DailyRoomParams(
-    properties=DailyRoomProperties(
-        sip=DailyRoomSipParams(
-            display_name="sip-dialin",
-            video = False,
-            sip_mode = "dial-in",
-            num_endpoints = 1
-        )
-    )
-)
-
 # Type definitions
 BotProcess = Tuple[subprocess.Popen, str]  # (process, room_url)
 bot_procs: Dict[int, BotProcess] = {}
@@ -120,6 +108,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# Dial-in Configuration
+params = DailyRoomParams(
+    properties=DailyRoomProperties(
+        sip=DailyRoomSipParams(
+            display_name="sip-dialin",
+            video = False,
+            sip_mode = "dial-in",
+            num_endpoints = 1
+        )
+    )
 )
 
 async def _create_dialin_daily_room(callId, callDomain=None):
