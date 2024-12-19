@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from loguru import logger
 import sys
 
-from pipecat.transports.services.helpers.daily_rest import DailyRESTHelper, DailyRoomParams
+from pipecat.transports.services.helpers.daily_rest import DailyRESTHelper, DailyRoomParams, DailyRoomProperties, DailyRoomSipParams, DailyRoomObject
 
 def configure_logging():
     """Configure logging with a single handler if none exists"""
@@ -37,6 +37,19 @@ MAX_BOTS_PER_ROOM = 1
 DEFAULT_HOST = os.getenv("HOST", "127.0.0.1")
 DEFAULT_PORT = int(os.getenv("FAST_API_PORT", "7860"))
 DAILY_API_URL = os.getenv("DAILY_API_URL", "https://api.daily.co/v1")
+TOKEN_EXPIRY_TIME = 60 * 60  # 1 hour in seconds
+
+# Dial-in Configuration
+params = DailyRoomParams(
+    properties=DailyRoomProperties(
+        sip=DailyRoomSipParams(
+            display_name="sip-dialin",
+            video = False,
+            sip_mode = "dial-in",
+            num_endpoints = 1
+        )
+    )
+)
 
 # Type definitions
 BotProcess = Tuple[subprocess.Popen, str]  # (process, room_url)
@@ -47,7 +60,7 @@ daily_helpers: Dict[str, DailyRESTHelper] = {}
 load_dotenv(override=True)
 
 def cleanup() -> None:
-    """Clean up function to terminate all bot processes"""
+    # Clean up function to terminate all bot processes
     logger.info("🧹 Starting cleanup of bot processes")
     for pid, (proc, room_url) in bot_procs.items():
         try:
@@ -62,8 +75,9 @@ def cleanup() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifecycle manager for the FastAPI application"""
+    # Lifecycle manager for the FastAPI application
     logger.info("🚀 Starting server...")
+    # Instantiate asyncronous http session
     aiohttp_session = None
     try:
         # Create SSL context with verified certificates
@@ -73,7 +87,7 @@ async def lifespan(app: FastAPI):
         # Create session with SSL context
         aiohttp_session = aiohttp.ClientSession(connector=conn)
         
-        daily_api_key = os.getenv("DAILY_API_KEY", "")
+        daily_api_key = os.getenv("DAILY_API_KEY")
         if not daily_api_key:
             logger.warning("⚠️ DAILY_API_KEY not set!")
             
@@ -99,6 +113,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Configure CORS
+# Todo: Limit CORS to the usecases of supa, daily, and RAG if necessary
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -107,23 +122,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+async def _create_dialin_daily_room(callId, callDomain=None):
+    logger.info("🏗️ Creating new room...")
+    room: DailyRoomObject = await daily_helpers["rest"].create_room(params=params)
+    if room:
+        logger.info(f"✅ Room created successfully: {room.url} with the sip_endpoint: {room.config.sip_endpoint}")
+    else:
+        raise HTTPException(status_code=500, detail=f"❌ Failed to get room")
+    token = await daily_helpers["rest"].get_token(room.url, TOKEN_EXPIRY_TIME)
+    if token:
+        logger.info(f"✅ Token generated for room successfully")
+    else:
+        raise HTTPException(status_code=500, detail=f"❌ Failed to get room or room token")
+    
+    bot_proc = f"python3 -m bot_daily -u {room.url} -t {token} -i {callId} -d {callDomain}"
+    try:
+        subprocess.Popen(
+            [bot_proc], shell=True, bufsize=1, cwd=os.path.dirname(os.path.abspath(__file__))
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start subprocess: {e}")
+
+    return room
+    
+@app.post("/daily_start_bot")
+async def daily_start_bot(request: Request) -> JSONResponse:
+    # The /daily_start_bot is invoked when a call is received on Daily's SIP URI
+
+    # Get the dial-in properties from the request
+    try:
+        data = await request.json()
+        if "test" in data:
+            # Pass through any webhook checks
+            return JSONResponse({"test": True})
+        callId = data.get("callId", None)
+        callDomain = data.get("callDomain", None)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Missing properties 'callId' or 'callDomain'")
+
+    print(f"📞 Received from a call Daily dialin with CallId: {callId}, CallDomain: {callDomain}")
+    room: DailyRoomObject = await _create_dialin_daily_room(callId, callDomain)
+
+    # Grab a token for the user to join with
+    return JSONResponse({"room_url": room.url, "sipUri": room.config.sip_endpoint})
+
+
+
 @app.get("/")
 async def start_agent(request: Request):
-    """Endpoint to create a new room and start a bot agent"""
+    # Endpoint to create a new room and start a bot agent
     client_ip = request.client.host
     logger.info(f"📞 New agent request from {client_ip}")
     
     try:
         # Create new room
         logger.info("🏗️ Creating new room...")
-        room = await daily_helpers["rest"].create_room(DailyRoomParams())
-        if not room.url:
-            logger.error("❌ Room creation failed - no URL returned")
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to create room - no URL returned"
-            )
-        logger.info(f"✅ Room created successfully: {room.url}")
+
+        # Web communication
+        room: DailyRoomObject = await daily_helpers["rest"].create_room(DailyRoomParams())
 
         # Check bot limits
         num_bots_in_room = sum(
@@ -163,6 +219,7 @@ async def start_agent(request: Request):
         bot_procs[proc.pid] = (proc, room.url)
         logger.info(f"✅ Bot started successfully with PID: {proc.pid}")
 
+        # The bot is started so next whatever hits the "/" endpoint is redirected to the daily room url 
         return RedirectResponse(room.url)
 
     except HTTPException:
@@ -203,8 +260,6 @@ def get_status(pid: int):
 if __name__ == "__main__":
     configure_logging()
     
-    import uvicorn
-    
     parser = argparse.ArgumentParser(description="BearHug FastAPI Server")
     parser.add_argument("--host", type=str, default=DEFAULT_HOST, help="Host address")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="Port number")
@@ -216,9 +271,13 @@ if __name__ == "__main__":
     if config.reload:
         logger.info("🔄 Hot reload enabled")
 
-    uvicorn.run(
-        "server:app",
-        host=config.host,
-        port=config.port,
-        reload=config.reload,
-    )
+    try:    
+        import uvicorn
+        uvicorn.run(
+            "server:app",
+            host=config.host,
+            port=config.port,
+            reload=config.reload,
+        )
+    except KeyboardInterrupt:
+        print("⬇️ Pipecat server is shutting down...")
