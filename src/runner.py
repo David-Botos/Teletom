@@ -1,7 +1,6 @@
 import argparse
 import os
 from typing import Tuple, Optional
-import sys
 
 import aiohttp
 from loguru import logger
@@ -25,6 +24,7 @@ async def configure(aiohttp_session: aiohttp.ClientSession) -> Tuple[str, str]:
     Raises:
         Exception: If required configuration is missing
     """
+
     logger.info("🔧 Starting configuration")
     
     # Parse command line arguments

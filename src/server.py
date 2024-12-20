@@ -62,7 +62,8 @@ async def lifespan(app: FastAPI):
     aiohttp_session = None
     try:
         # Create SSL context with verified certificates
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        SSL_CERT = certifi.where()
+        ssl_context = ssl.create_default_context(cafile=SSL_CERT)
         conn = aiohttp.TCPConnector(ssl=ssl_context)
         
         # Create session with SSL context
@@ -128,10 +129,13 @@ async def _create_dialin_daily_room(callId, callDomain=None):
     else:
         raise HTTPException(status_code=500, detail=f"❌ Failed to get room or room token")
     
-    bot_proc = f"python3 -m bot_daily -u {room.url} -t {token} -i {callId} -d {callDomain}"
+    bot_proc = f"python3 -m bot -u {room.url} -t {token} -i {callId} -d {callDomain}"
     try:
         subprocess.Popen(
-            [bot_proc], shell=True, bufsize=1, cwd=os.path.dirname(os.path.abspath(__file__))
+            [bot_proc], 
+            shell=True, 
+            bufsize=1, 
+            cwd=os.path.dirname(os.path.abspath(__file__)),
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to start subprocess: {e}")
@@ -199,15 +203,12 @@ async def start_agent(request: Request):
 
         # Start bot process with SSL certificate path
         logger.info("🤖 Starting bot process...")
-        env = os.environ.copy()
-        env["SSL_CERT_FILE"] = certifi.where()
         
         proc = subprocess.Popen(
             [f"python3 -m bot -u {room.url} -t {token}"],
             shell=True,
             bufsize=1,
             cwd=os.path.dirname(os.path.abspath(__file__)),
-            env=env
         )
         bot_procs[proc.pid] = (proc, room.url)
         logger.info(f"✅ Bot started successfully with PID: {proc.pid}")
