@@ -1,6 +1,6 @@
 # AI Voice Bot
 
-A real-time voice conversation bot built with Pipecat that can handle phone calls via Twilio integration. The bot uses Claude for conversation intelligence and ElevenLabs for voice synthesis.
+A real-time voice conversation bot built with Pipecat that can handle phone calls via Daily. The bot uses Claude for conversation intelligence and ElevenLabs for voice synthesis.
 
 ## 📁 Project Structure
 ```
